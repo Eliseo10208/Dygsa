@@ -46,6 +46,9 @@ const handler = NextAuth({
       session.user = token.user as any;
       return session;
     }
+  },
+  pages: {
+    signIn: '/login',
   }
 });
 
