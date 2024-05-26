@@ -1,18 +1,4 @@
-:root{
-	--base: #272829;
-	--color2: #34373c;
-	--color3: #707172;
-}
-body{
-	background-color: #ededed;
-}
 
-img{
-	max-width: 100%;
-}
-[onclick]{
-	cursor: pointer;
-}
 .login-content{
 	position: absolute;
 	top: 45px;

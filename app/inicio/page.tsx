@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react"
 import '@/app/assets/css/Styles.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
+import '@/app/assets/css/checkbox.css'
 function Inicio(){
 
     const {data: session, status} = useSession()
