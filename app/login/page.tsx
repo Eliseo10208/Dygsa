@@ -3,9 +3,9 @@
 import { FormEvent, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+//Hojaas de estilos importadas de la ruta .......
 import '@/app/assets/css/Styles.css'
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.min.js';
+import '@/app/assets/css/checkbox.css'
 function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
