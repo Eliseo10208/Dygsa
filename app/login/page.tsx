@@ -24,7 +24,7 @@ function LoginPage() {
             if (signinResponse?.error) {
                 setError(signinResponse.error);
             } else if (signinResponse?.ok) {
-                router.push('/inicio');
+                router.push('/pages/viajes');
             } else {
                 console.log(signinResponse);
             }

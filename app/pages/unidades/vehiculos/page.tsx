@@ -6,31 +6,30 @@ import * as XLSX from "xlsx";
 import "@/app/assets/css/Styles.css";
 import "@/app/assets/css/checkbox.css";
 import { useRouter } from "next/navigation";
-import OrdenCarga from "./editar/page";
-type Viaje = {
-    nManifiesto: string;
-    fProgram: string;
-    ruta: string;
-    vehiculo: string;
-    conductor: string;
+
+type Vehiculo = {
+    placa: string;
+    clase: string;
+    configuracion: string;
+    capM3: string;
+    capTn: string;
 };
 
-const ViajesPanel: React.FC = () => {
+const VehiculosPanel: React.FC = () => {
     const [activeComponent, setActiveComponent] = useState<string>("");
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(6);
     const [searchTerm, setSearchTerm] = useState<string>("");
 
-    const data: Viaje[] = useMemo(
+    const data: Vehiculo[] = useMemo(
         () => [
             {
-                nManifiesto: "Cliente 1",
-                fProgram: "Dirección 1",
-                ruta: "Distrito 1",
-                vehiculo: "Provincia 1",
-                conductor: "sasa",
+                placa: "ABC-123",
+                clase: "Camión",
+                configuracion: "4x2",
+                capM3: "20",
+                capTn: "10",
             },
-            
             // Agrega más datos según sea necesario
         ],
         []
@@ -38,40 +37,60 @@ const ViajesPanel: React.FC = () => {
 
     const filteredData = useMemo(
         () =>
-            data.filter((viaje) =>
-                Object.values(viaje).some((value) =>
+            data.filter((vehiculo) =>
+                Object.values(vehiculo).some((value) =>
                     value.toLowerCase().includes(searchTerm.toLowerCase())
                 )
             ),
         [data, searchTerm]
     );
 
-    const columns: Column<Viaje>[] = useMemo(
+    const columns: Column<Vehiculo>[] = useMemo(
         () => [
-            { Header: "NManifiesto", accessor: "nManifiesto" },
-            { Header: "FProgramn", accessor: "fProgram" },
-            { Header: "Ruta", accessor: "ruta" },
-            { Header: "Vehiculo", accessor: "vehiculo" },
-            { Header: "Conductor", accessor: "conductor" },
+            { Header: "Placa", accessor: "placa" },
+            { Header: "Clase de vehículo", accessor: "clase" },
+            { Header: "Config.", accessor: "configuracion" },
+            { Header: "Cap. M3", accessor: "capM3" },
+            { Header: "Cap. Tn", accessor: "capTn" },
             {
-                Header: "Modificar",
-                id: "modificar",
-                Cell: ({ row }: { row: { original: Viaje } }) => (
+                Header: "Editar",
+                id: "editar",
+                Cell: ({ row }: { row: { original: Vehiculo } }) => (
                     <button
                         className="table_buttons orange"
-                        onClick={() => setActiveComponent("newClient")}
+                        onClick={() => setActiveComponent("editVehiculo")}
                     >
-                        <i className="fas fa-edit"></i> Modificar
+                        <i className="fas fa-edit"></i> Editar
+                    </button>
+                ),
+            },
+            {
+                Header: "Ver más",
+                id: "verMas",
+                Cell: ({ row }: { row: { original: Vehiculo } }) => (
+                    <button
+                        className="table_buttons blue"
+                        onClick={() => setActiveComponent("viewVehiculo")}
+                    >
+                        <i className="fas fa-eye"></i> Ver más
+                    </button>
+                ),
+            },
+            {
+                Header: "Mto.",
+                id: "mantenimiento",
+                Cell: ({ row }: { row: { original: Vehiculo } }) => (
+                    <button
+                        className="table_buttons green"
+                        onClick={() => setActiveComponent("maintenanceVehiculo")}
+                    >
+                        <i className="fas fa-wrench"></i> Mto.
                     </button>
                 ),
             },
         ],
         []
     );
-
-    const handleCellDoubleClick = () => {
-        console.log("Editando:");
-    };
 
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
@@ -95,18 +114,20 @@ const ViajesPanel: React.FC = () => {
 
     const renderContent = () => {
         switch (activeComponent) {
-            case "OrdenCarga":
-                return <OrdenCarga/>;
-            case "editClient":
-                return; // <EditClient onBack={() => setActiveComponent("")} />;
+            case "editVehiculo":
+                return; // Aquí puedes agregar el componente para editar
+            case "viewVehiculo":
+                return; // Aquí puedes agregar el componente para ver más detalles
+            case "maintenanceVehiculo":
+                return; // Aquí puedes agregar el componente para mantenimiento
             default:
                 return (
                     <>
                         <div className="panel">
                             <div className="panel-header">
                                 <div className="title">
-                                    Lista de clientes
-                                    <p>Administración de transporte de carga</p>
+                                    Lista de vehículos
+                                    <p>Administración de vehículos</p>
                                 </div>
                                 <div className="buttons">
                                     <div className="column">
@@ -120,7 +141,9 @@ const ViajesPanel: React.FC = () => {
                                     <div className="column">
                                         <button
                                             className="btn btn-primary"
-                                            onClick={() => router.push('/pages/viajes/editar')}
+                                            onClick={() =>
+                                                setActiveComponent("newVehiculo")
+                                            }
                                         >
                                             Crear nuevo
                                         </button>
@@ -164,55 +187,55 @@ const ViajesPanel: React.FC = () => {
                                                 style={{ width: "0px" }}
                                             ></th>
                                             <th style={{ width: "79px" }}>
-                                                Nº Manifiesto
+                                                Placa
                                             </th>
                                             <th style={{ width: "61px" }}>
-                                                F. program
+                                                Clase de vehículo
                                             </th>
                                             <th style={{ width: "58px" }}>
-                                                Ruta
+                                                Config.
                                             </th>
                                             <th style={{ width: "49px" }}>
-                                                Vehículo
+                                                Cap. M3
                                             </th>
                                             <th style={{ width: "60px" }}>
-                                                Conductor
+                                                Cap. Tn
                                             </th>
                                             <th
                                                 className="excel_clear"
                                                 style={{ width: "26px" }}
                                             >
-                                                Edit.
+                                                Editar
                                             </th>
                                             <th
                                                 className="excel_clear"
                                                 style={{ width: "47px" }}
                                             >
-                                                Facturas
+                                                Ver más
                                             </th>
                                             <th
-                                                className="excel_clear d-none"
+                                                className="excel_clear"
                                                 style={{ width: "45px" }}
                                             >
-                                                Ver más
+                                                Mto.
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {currentData.map((viaje, index) => (
+                                        {currentData.map((vehiculo, index) => (
                                             <tr key={index}>
                                                 <td className="dtr-control"></td>
-                                                <td>{viaje.nManifiesto}</td>
-                                                <td>{viaje.fProgram}</td>
-                                                <td>{viaje.ruta}</td>
-                                                <td>{viaje.vehiculo}</td>
-                                                <td>{viaje.conductor}</td>
+                                                <td>{vehiculo.placa}</td>
+                                                <td>{vehiculo.clase}</td>
+                                                <td>{vehiculo.configuracion}</td>
+                                                <td>{vehiculo.capM3}</td>
+                                                <td>{vehiculo.capTn}</td>
                                                 <td>
                                                     <button
                                                         className="btn btn-warning"
                                                         onClick={() =>
                                                             setActiveComponent(
-                                                                "editClient"
+                                                                "editVehiculo"
                                                             )
                                                         }
                                                     >
@@ -221,12 +244,12 @@ const ViajesPanel: React.FC = () => {
                                                 </td>
                                                 <td>
                                                     <button className="btn btn-success">
-                                                        Facturas
+                                                        Ver más
                                                     </button>
                                                 </td>
-                                                <td className="d-none">
+                                                <td>
                                                     <button className="btn btn-primary">
-                                                        Ver más
+                                                        Mto.
                                                     </button>
                                                 </td>
                                             </tr>
@@ -252,7 +275,7 @@ const ViajesPanel: React.FC = () => {
                                             aria-controls="table_id3"
                                             tabIndex={0}
                                         >
-                                            Pagina {currentPage}
+                                            Página {currentPage}
                                         </a>
                                     </div>
                                     <button
@@ -273,7 +296,7 @@ const ViajesPanel: React.FC = () => {
         }
     };
 
-    const tableInstance = useTable<Viaje>({ columns, data });
+    const tableInstance = useTable<Vehiculo>({ columns, data });
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
         tableInstance;
@@ -281,11 +304,11 @@ const ViajesPanel: React.FC = () => {
     const exportTableToExcel = () => {
         const ws = XLSX.utils.json_to_sheet(data);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Viajes");
-        XLSX.writeFile(wb, "viajes.xlsx");
+        XLSX.utils.book_append_sheet(wb, ws, "Vehículos");
+        XLSX.writeFile(wb, "vehiculos.xlsx");
     };
 
     return <div className="panel">{renderContent()}</div>;
 };
 
-export default ViajesPanel;
+export default VehiculosPanel;

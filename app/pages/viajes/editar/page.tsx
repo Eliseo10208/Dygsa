@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "@/app/assets/css/Styles.css";
 import "@/app/assets/css/checkbox.css";
+import { useRouter } from "next/navigation";
 
 type Cliente = {
     id: number;
@@ -31,6 +32,7 @@ const OrdenCarga: React.FC = () => {
     const [conductores, setConductores] = useState<Conductor[]>([]);
     const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
     const [rutas, setRutas] = useState<Ruta[]>([]);
+    const router = useRouter();
 
     useEffect(() => {
         // Reemplazar con las rutas de tus APIs
@@ -69,7 +71,7 @@ const OrdenCarga: React.FC = () => {
 
     return (
         <div className="panel">
-            <button className="back_btn btn btn-secondary" onClick={() => /* manejar navegación */ {}}>
+            <button className="back_btn btn btn-secondary" onClick={() => router.push('/pages/viajes')}>
                 Regresar
             </button>
             <div className="panel-header">
