@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "@/provider/provider";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 export const metadata: Metadata = {
   title: "Dygsa",
   description: "Bienvendio a Dygsa",

@@ -1,18 +1,4 @@
-:root{
-	--base: #272829;
-	--color2: #34373c;
-	--color3: #707172;
-}
-body{
-	background-color: #ededed;
-}
 
-img{
-	max-width: 100%;
-}
-[onclick]{
-	cursor: pointer;
-}
 .login-content{
 	position: absolute;
 	top: 45px;
@@ -27,6 +13,78 @@ img{
 	background: white;
 }
 
+.group{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+/* Estilos para la estructura básica del menú */
+.nav-group {
+	position: relative;
+  }
+  .table-container {
+    overflow-y: auto;
+    max-height: 400px; /* Ajusta esto según sea necesario */
+}
+
+.table-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.table-pagination button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+}
+
+.table-pagination button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+  .nav-group ul {
+	display: none;
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	background-color: white;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	z-index: 1000;
+	width: 100%;
+  }
+  
+  .nav-group ul.open {
+	display: block;
+  }
+  
+  .nav-group ul li {
+	padding: 8px 16px;
+	cursor: pointer;
+  }
+  
+  .nav-group ul li:hover {
+	background-color: #f0f0f0;
+  }
+  
+  /* Estilos adicionales opcionales */
+  .nav-txt {
+	display: inline-block;
+	margin-left: 8px;
+  }
+  
+  .fa-screwdriver {
+	cursor: pointer;
+  }
+  
 .login-content .login-logo{
 	text-align: center;
 }
