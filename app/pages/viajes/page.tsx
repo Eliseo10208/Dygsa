@@ -16,7 +16,7 @@ type Viaje = {
 };
 
 const ViajesPanel: React.FC = () => {
-    const [activeComponent, setActiveComponent] = useState<string>("");
+    
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(6);
     const [searchTerm, setSearchTerm] = useState<string>("");
@@ -59,7 +59,7 @@ const ViajesPanel: React.FC = () => {
                 Cell: ({ row }: { row: { original: Viaje } }) => (
                     <button
                         className="table_buttons orange"
-                        onClick={() => setActiveComponent("newClient")}
+                      
                     >
                         <i className="fas fa-edit"></i> Modificar
                     </button>
@@ -93,185 +93,7 @@ const ViajesPanel: React.FC = () => {
 
     const router = useRouter();
 
-    const renderContent = () => {
-        switch (activeComponent) {
-            case "OrdenCarga":
-                return <OrdenCarga/>;
-            case "editClient":
-                return; // <EditClient onBack={() => setActiveComponent("")} />;
-            default:
-                return (
-                    <>
-                        <div className="panel">
-                            <div className="panel-header">
-                                <div className="title">
-                                    Lista de clientes
-                                    <p>Administración de transporte de carga</p>
-                                </div>
-                                <div className="buttons">
-                                    <div className="column">
-                                        <button
-                                            className="btn btn-green2"
-                                            onClick={exportTableToExcel}
-                                        >
-                                            Descargar Excel
-                                        </button>
-                                    </div>
-                                    <div className="column">
-                                        <button
-                                            className="btn btn-primary"
-                                            onClick={() => router.push('/pages/viajes/editar')}
-                                        >
-                                            Crear nuevo
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <table
-                                {...getTableProps()}
-                                className="display nowrap"
-                                style={{ width: "100%" }}
-                            >
-                                <thead>
-                                    <div className="row mb-3">
-                                        <div className="col-md-6"></div>
-                                        <div className="col-md-6 text-end">
-                                            <label>
-                                                Buscar:
-                                                <input
-                                                    type="search"
-                                                    aria-controls="table_id3"
-                                                    className="form-control d-inline-block w-auto ms-2"
-                                                    value={searchTerm}
-                                                    onChange={
-                                                        handleSearchChange
-                                                    }
-                                                />
-                                            </label>
-                                        </div>
-                                    </div>
-                                </thead>
-                                <table
-                                    id="table_id3"
-                                    className="table table-striped table-bordered nowrap"
-                                    style={{ width: "100%" }}
-                                >
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                className="excel_clear"
-                                                style={{ width: "0px" }}
-                                            ></th>
-                                            <th style={{ width: "79px" }}>
-                                                Nº Manifiesto
-                                            </th>
-                                            <th style={{ width: "61px" }}>
-                                                F. program
-                                            </th>
-                                            <th style={{ width: "58px" }}>
-                                                Ruta
-                                            </th>
-                                            <th style={{ width: "49px" }}>
-                                                Vehículo
-                                            </th>
-                                            <th style={{ width: "60px" }}>
-                                                Conductor
-                                            </th>
-                                            <th
-                                                className="excel_clear"
-                                                style={{ width: "26px" }}
-                                            >
-                                                Edit.
-                                            </th>
-                                            <th
-                                                className="excel_clear"
-                                                style={{ width: "47px" }}
-                                            >
-                                                Facturas
-                                            </th>
-                                            <th
-                                                className="excel_clear d-none"
-                                                style={{ width: "45px" }}
-                                            >
-                                                Ver más
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {currentData.map((viaje, index) => (
-                                            <tr key={index}>
-                                                <td className="dtr-control"></td>
-                                                <td>{viaje.nManifiesto}</td>
-                                                <td>{viaje.fProgram}</td>
-                                                <td>{viaje.ruta}</td>
-                                                <td>{viaje.vehiculo}</td>
-                                                <td>{viaje.conductor}</td>
-                                                <td>
-                                                    <button
-                                                        className="btn btn-warning"
-                                                        onClick={() =>
-                                                            setActiveComponent(
-                                                                "editClient"
-                                                            )
-                                                        }
-                                                    >
-                                                        Editar
-                                                    </button>
-                                                </td>
-                                                <td>
-                                                    <button className="btn btn-success">
-                                                        Facturas
-                                                    </button>
-                                                </td>
-                                                <td className="d-none">
-                                                    <button className="btn btn-primary">
-                                                        Ver más
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                <div className="d-flex justify-content-between align-items-center mt-3">
-                                    <button
-                                        className="btn btn-secondary"
-                                        aria-controls="table_id3"
-                                        tabIndex={-1}
-                                        id="table_id3_previous"
-                                        onClick={() =>
-                                            handlePageChange("previous")
-                                        }
-                                        disabled={currentPage === 1}
-                                    >
-                                        Atrás
-                                    </button>
-                                    <div>
-                                        <a
-                                            className="btn btn-primary active"
-                                            aria-controls="table_id3"
-                                            tabIndex={0}
-                                        >
-                                            Pagina {currentPage}
-                                        </a>
-                                    </div>
-                                    <button
-                                        className="btn btn-secondary"
-                                        aria-controls="table_id3"
-                                        tabIndex={-1}
-                                        id="table_id3_next"
-                                        onClick={() => handlePageChange("next")}
-                                        disabled={currentPage === totalPages}
-                                    >
-                                        Siguiente
-                                    </button>
-                                </div>
-                            </table>
-                        </div>
-                    </>
-                );
-        }
-    };
+   
 
     const tableInstance = useTable<Viaje>({ columns, data });
 
@@ -285,7 +107,175 @@ const ViajesPanel: React.FC = () => {
         XLSX.writeFile(wb, "viajes.xlsx");
     };
 
-    return <div className="panel">{renderContent()}</div>;
+    return (
+        <>
+        <div className="panel">
+            <div className="panel-header">
+                <div className="title">
+                    Lista de clientes
+                    <p>Administración de transporte de carga</p>
+                </div>
+                <div className="buttons">
+                    <div className="column">
+                        <button
+                            className="btn btn-green2"
+                            onClick={exportTableToExcel}
+                        >
+                            Descargar Excel
+                        </button>
+                    </div>
+                    <div className="column">
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => router.push('/pages/viajes/crear')}
+                        >
+                            Crear nuevo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <table
+                {...getTableProps()}
+                className="display nowrap"
+                style={{ width: "100%" }}
+            >
+                <thead>
+                    <div className="row mb-3">
+                        <div className="col-md-6"></div>
+                        <div className="col-md-6 text-end">
+                            <label>
+                                Buscar:
+                                <input
+                                    type="search"
+                                    aria-controls="table_id3"
+                                    className="form-control d-inline-block w-auto ms-2"
+                                    value={searchTerm}
+                                    onChange={
+                                        handleSearchChange
+                                    }
+                                />
+                            </label>
+                        </div>
+                    </div>
+                </thead>
+                <table
+                    id="table_id3"
+                    className="table table-striped table-bordered nowrap"
+                    style={{ width: "100%" }}
+                >
+                    <thead>
+                        <tr>
+                            <th
+                                className="excel_clear"
+                                style={{ width: "0px" }}
+                            ></th>
+                            <th style={{ width: "79px" }}>
+                                Nº Manifiesto
+                            </th>
+                            <th style={{ width: "61px" }}>
+                                F. program
+                            </th>
+                            <th style={{ width: "58px" }}>
+                                Ruta
+                            </th>
+                            <th style={{ width: "49px" }}>
+                                Vehículo
+                            </th>
+                            <th style={{ width: "60px" }}>
+                                Conductor
+                            </th>
+                            <th
+                                className="excel_clear"
+                                style={{ width: "26px" }}
+                            >
+                                Edit.
+                            </th>
+                            <th
+                                className="excel_clear"
+                                style={{ width: "47px" }}
+                            >
+                                Facturas
+                            </th>
+                            <th
+                                className="excel_clear d-none"
+                                style={{ width: "45px" }}
+                            >
+                                Ver más
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {currentData.map((viaje, index) => (
+                            <tr key={index}>
+                                <td className="dtr-control"></td>
+                                <td>{viaje.nManifiesto}</td>
+                                <td>{viaje.fProgram}</td>
+                                <td>{viaje.ruta}</td>
+                                <td>{viaje.vehiculo}</td>
+                                <td>{viaje.conductor}</td>
+                                <td>
+                                    <button
+                                        className="btn btn-warning"
+                                        onClick={() => router.push('/pages/viajes/editar')}
+                                    >
+                                        Editar
+                                    </button>
+                                </td>
+                                <td>
+                                    <button className="btn btn-success"
+                                     onClick={() => router.push('/pages/viajes/facturas')}
+                                    >
+                                        Facturas
+                                    </button>
+                                </td>
+                                <td className="d-none">
+                                    <button className="btn btn-primary">
+                                        Ver más
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                <div className="d-flex justify-content-between align-items-center mt-3">
+                    <button
+                        className="btn btn-secondary"
+                        aria-controls="table_id3"
+                        tabIndex={-1}
+                        id="table_id3_previous"
+                        onClick={() =>
+                            handlePageChange("previous")
+                        }
+                        disabled={currentPage === 1}
+                    >
+                        Atrás
+                    </button>
+                    <div>
+                        <a
+                            className="btn btn-primary active"
+                            aria-controls="table_id3"
+                            tabIndex={0}
+                        >
+                            Pagina {currentPage}
+                        </a>
+                    </div>
+                    <button
+                        className="btn btn-secondary"
+                        aria-controls="table_id3"
+                        tabIndex={-1}
+                        id="table_id3_next"
+                        onClick={() => handlePageChange("next")}
+                        disabled={currentPage === totalPages}
+                    >
+                        Siguiente
+                    </button>
+                </div>
+            </table>
+        </div>
+    </>
+);
+    
 };
 
 export default ViajesPanel;

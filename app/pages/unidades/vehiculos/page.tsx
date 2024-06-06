@@ -16,7 +16,7 @@ type Vehiculo = {
 };
 
 const VehiculosPanel: React.FC = () => {
-    const [activeComponent, setActiveComponent] = useState<string>("");
+   
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(6);
     const [searchTerm, setSearchTerm] = useState<string>("");
@@ -58,7 +58,7 @@ const VehiculosPanel: React.FC = () => {
                 Cell: ({ row }: { row: { original: Vehiculo } }) => (
                     <button
                         className="table_buttons orange"
-                        onClick={() => setActiveComponent("editVehiculo")}
+                        onClick={() => router.push('/pages/vehichulos/edit')}
                     >
                         <i className="fas fa-edit"></i> Editar
                     </button>
@@ -70,7 +70,7 @@ const VehiculosPanel: React.FC = () => {
                 Cell: ({ row }: { row: { original: Vehiculo } }) => (
                     <button
                         className="table_buttons blue"
-                        onClick={() => setActiveComponent("viewVehiculo")}
+                        onClick={() => router.push('/pages/vehichulos/ver')}
                     >
                         <i className="fas fa-eye"></i> Ver más
                     </button>
@@ -82,7 +82,7 @@ const VehiculosPanel: React.FC = () => {
                 Cell: ({ row }: { row: { original: Vehiculo } }) => (
                     <button
                         className="table_buttons green"
-                        onClick={() => setActiveComponent("maintenanceVehiculo")}
+                        onClick={() => router.push('/pages/vehichulos/mantenimiento')}
                     >
                         <i className="fas fa-wrench"></i> Mto.
                     </button>
@@ -112,190 +112,7 @@ const VehiculosPanel: React.FC = () => {
 
     const router = useRouter();
 
-    const renderContent = () => {
-        switch (activeComponent) {
-            case "editVehiculo":
-                return; // Aquí puedes agregar el componente para editar
-            case "viewVehiculo":
-                return; // Aquí puedes agregar el componente para ver más detalles
-            case "maintenanceVehiculo":
-                return; // Aquí puedes agregar el componente para mantenimiento
-            default:
-                return (
-                    <>
-                        <div className="panel">
-                            <div className="panel-header">
-                                <div className="title">
-                                    Lista de vehículos
-                                    <p>Administración de vehículos</p>
-                                </div>
-                                <div className="buttons">
-                                    <div className="column">
-                                        <button
-                                            className="btn btn-green2"
-                                            onClick={exportTableToExcel}
-                                        >
-                                            Descargar Excel
-                                        </button>
-                                    </div>
-                                    <div className="column">
-                                        <button
-                                            className="btn btn-primary"
-                                            onClick={() =>
-                                                setActiveComponent("newVehiculo")
-                                            }
-                                        >
-                                            Crear nuevo
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <table
-                                {...getTableProps()}
-                                className="display nowrap"
-                                style={{ width: "100%" }}
-                            >
-                                <thead>
-                                    <div className="row mb-3">
-                                        <div className="col-md-6"></div>
-                                        <div className="col-md-6 text-end">
-                                            <label>
-                                                Buscar:
-                                                <input
-                                                    type="search"
-                                                    aria-controls="table_id3"
-                                                    className="form-control d-inline-block w-auto ms-2"
-                                                    value={searchTerm}
-                                                    onChange={
-                                                        handleSearchChange
-                                                    }
-                                                />
-                                            </label>
-                                        </div>
-                                    </div>
-                                </thead>
-                                <table
-                                    id="table_id3"
-                                    className="table table-striped table-bordered nowrap"
-                                    style={{ width: "100%" }}
-                                >
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                className="excel_clear"
-                                                style={{ width: "0px" }}
-                                            ></th>
-                                            <th style={{ width: "79px" }}>
-                                                Placa
-                                            </th>
-                                            <th style={{ width: "61px" }}>
-                                                Clase de vehículo
-                                            </th>
-                                            <th style={{ width: "58px" }}>
-                                                Config.
-                                            </th>
-                                            <th style={{ width: "49px" }}>
-                                                Cap. M3
-                                            </th>
-                                            <th style={{ width: "60px" }}>
-                                                Cap. Tn
-                                            </th>
-                                            <th
-                                                className="excel_clear"
-                                                style={{ width: "26px" }}
-                                            >
-                                                Editar
-                                            </th>
-                                            <th
-                                                className="excel_clear"
-                                                style={{ width: "47px" }}
-                                            >
-                                                Ver más
-                                            </th>
-                                            <th
-                                                className="excel_clear"
-                                                style={{ width: "45px" }}
-                                            >
-                                                Mto.
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {currentData.map((vehiculo, index) => (
-                                            <tr key={index}>
-                                                <td className="dtr-control"></td>
-                                                <td>{vehiculo.placa}</td>
-                                                <td>{vehiculo.clase}</td>
-                                                <td>{vehiculo.configuracion}</td>
-                                                <td>{vehiculo.capM3}</td>
-                                                <td>{vehiculo.capTn}</td>
-                                                <td>
-                                                    <button
-                                                        className="btn btn-warning"
-                                                        onClick={() =>
-                                                            setActiveComponent(
-                                                                "editVehiculo"
-                                                            )
-                                                        }
-                                                    >
-                                                        Editar
-                                                    </button>
-                                                </td>
-                                                <td>
-                                                    <button className="btn btn-success">
-                                                        Ver más
-                                                    </button>
-                                                </td>
-                                                <td>
-                                                    <button className="btn btn-primary">
-                                                        Mto.
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                <div className="d-flex justify-content-between align-items-center mt-3">
-                                    <button
-                                        className="btn btn-secondary"
-                                        aria-controls="table_id3"
-                                        tabIndex={-1}
-                                        id="table_id3_previous"
-                                        onClick={() =>
-                                            handlePageChange("previous")
-                                        }
-                                        disabled={currentPage === 1}
-                                    >
-                                        Atrás
-                                    </button>
-                                    <div>
-                                        <a
-                                            className="btn btn-primary active"
-                                            aria-controls="table_id3"
-                                            tabIndex={0}
-                                        >
-                                            Página {currentPage}
-                                        </a>
-                                    </div>
-                                    <button
-                                        className="btn btn-secondary"
-                                        aria-controls="table_id3"
-                                        tabIndex={-1}
-                                        id="table_id3_next"
-                                        onClick={() => handlePageChange("next")}
-                                        disabled={currentPage === totalPages}
-                                    >
-                                        Siguiente
-                                    </button>
-                                </div>
-                            </table>
-                        </div>
-                    </>
-                );
-        }
-    };
-
+   
     const tableInstance = useTable<Vehiculo>({ columns, data });
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
@@ -308,7 +125,172 @@ const VehiculosPanel: React.FC = () => {
         XLSX.writeFile(wb, "vehiculos.xlsx");
     };
 
-    return <div className="panel">{renderContent()}</div>;
+    return (
+        <>
+            <div className="panel">
+                <div className="panel-header">
+                    <div className="title">
+                        Lista de vehículos
+                        <p>Administración de vehículos</p>
+                    </div>
+                    <div className="buttons">
+                        <div className="column">
+                            <button
+                                className="btn btn-green2"
+                                onClick={exportTableToExcel}
+                            >
+                                Descargar Excel
+                            </button>
+                        </div>
+                        <div className="column">
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => router.push('/pages/unidades/vehiculos/crear')}
+                            >
+                                Crear nuevo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <table
+                    {...getTableProps()}
+                    className="display nowrap"
+                    style={{ width: "100%" }}
+                >
+                    <thead>
+                        <div className="row mb-3">
+                            <div className="col-md-6"></div>
+                            <div className="col-md-6 text-end">
+                                <label>
+                                    Buscar:
+                                    <input
+                                        type="search"
+                                        aria-controls="table_id3"
+                                        className="form-control d-inline-block w-auto ms-2"
+                                        value={searchTerm}
+                                        onChange={
+                                            handleSearchChange
+                                        }
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                    </thead>
+                    <table
+                        id="table_id3"
+                        className="table table-striped table-bordered nowrap"
+                        style={{ width: "100%" }}
+                    >
+                        <thead>
+                            <tr>
+                                <th
+                                    className="excel_clear"
+                                    style={{ width: "0px" }}
+                                ></th>
+                                <th style={{ width: "79px" }}>
+                                    Placa
+                                </th>
+                                <th style={{ width: "61px" }}>
+                                    Clase de vehículo
+                                </th>
+                                <th style={{ width: "58px" }}>
+                                    Config.
+                                </th>
+                                <th style={{ width: "49px" }}>
+                                    Cap. M3
+                                </th>
+                                <th style={{ width: "60px" }}>
+                                    Cap. Tn
+                                </th>
+                                <th
+                                    className="excel_clear"
+                                    style={{ width: "26px" }}
+                                >
+                                    Editar
+                                </th>
+                                <th
+                                    className="excel_clear"
+                                    style={{ width: "47px" }}
+                                >
+                                    Ver más
+                                </th>
+                                <th
+                                    className="excel_clear"
+                                    style={{ width: "45px" }}
+                                >
+                                    Mto.
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {currentData.map((vehiculo, index) => (
+                                <tr key={index}>
+                                    <td className="dtr-control"></td>
+                                    <td>{vehiculo.placa}</td>
+                                    <td>{vehiculo.clase}</td>
+                                    <td>{vehiculo.configuracion}</td>
+                                    <td>{vehiculo.capM3}</td>
+                                    <td>{vehiculo.capTn}</td>
+                                    <td>
+                                        <button
+                                            className="btn btn-warning"
+                                            onClick={() => router.push('/pages/unidades/vehiculos/edit')}
+                                        >
+                                            Editar
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button className="btn btn-success" onClick={() => router.push('/pages/unidades/vehiculos/ver')}>
+                                            Ver más
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button className="btn btn-primary" onClick={() => router.push('/pages/unidades/vehiculos/mantenimiento')}>
+                                            Mto.
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <div className="d-flex justify-content-between align-items-center mt-3">
+                        <button
+                            className="btn btn-secondary"
+                            aria-controls="table_id3"
+                            tabIndex={-1}
+                            id="table_id3_previous"
+                            onClick={() =>
+                                handlePageChange("previous")
+                            }
+                            disabled={currentPage === 1}
+                        >
+                            Atrás
+                        </button>
+                        <div>
+                            <a
+                                className="btn btn-primary active"
+                                aria-controls="table_id3"
+                                tabIndex={0}
+                            >
+                                Página {currentPage}
+                            </a>
+                        </div>
+                        <button
+                            className="btn btn-secondary"
+                            aria-controls="table_id3"
+                            tabIndex={-1}
+                            id="table_id3_next"
+                            onClick={() => handlePageChange("next")}
+                            disabled={currentPage === totalPages}
+                        >
+                            Siguiente
+                        </button>
+                    </div>
+                </table>
+            </div>
+        </>
+    );
 };
 
 export default VehiculosPanel;

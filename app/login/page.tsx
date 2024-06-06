@@ -3,6 +3,8 @@
 import { FormEvent, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import Logo from '@/app/assets/img/logo.png'
 //Hojaas de estilos importadas de la ruta .......
 import '@/app/assets/css/Styles.css'
 import '@/app/assets/css/checkbox.css'
@@ -37,7 +39,10 @@ function LoginPage() {
     return (
         <div className="login-content">
             <div className="login-logo">
-                <img src="/assets/img/logo.png" alt="Logo" />
+                <Image src={Logo}
+                width={200}
+                height={100}
+                alt='logo'/>
             </div>
             <h6>HOLA, Bienvenido de nuevo!</h6>
             <form data-ajax="false" className="login-form" onSubmit={handleSubmit}>

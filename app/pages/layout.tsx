@@ -13,7 +13,6 @@ import logo2 from '@/app/assets/img/logo2.png';
 import { useRouter } from 'next/navigation';
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { data: session, status } = useSession();
-    const [activeComponent, setActiveComponent] = useState<string>("");
     const [openMenu, setOpenMenu] = useState<string | null>(null);
     const router = useRouter();
     const handleMenuClick = (menu: string) => {
@@ -46,24 +45,24 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         <div className="nav-txt">Unidades</div>
                     </div>
                     <ul style={{ display: openMenu === "unidades" ? "block" : "none" }}>
-                        <li>Vehículos</li>
-                        <li>Remolques</li>
-                        <li>Configuración</li>
+                        <li  onClick={() => router.push('/pages/unidades/vehiculos')}>Vehículos</li>
+                        <li  onClick={() => router.push('/pages/unidades/remolques')}>Remolques</li>
+                        <li  onClick={() => router.push('/pages/unidades/configuracion')}>Configuración</li>
                     </ul>
                 </div>
                 <div className="nav-group">
-                    <div>
+                    <div  onClick={() => router.push('/pages/operadores')} >
                         <i className="fa fa-id-card"></i>
                         <div className="nav-txt">Operadores</div>
                     </div>
                 </div>
                 <div className="nav-group">
-                    <div>
+                    <div  onClick={() => router.push('/pages/rutas')}>
                         <i className="fa fa-road"></i>
                         <div className="nav-txt">Rutas</div>
                     </div>
                 </div>
-                <div className="nav-group" onClick={() => setActiveComponent("Clientes")}>
+                <div className="nav-group" onClick={() => router.push('/pages/clients')}>
                     <div>
                         <i className="fa fa-users"></i>
                         <div className="nav-txt">Clientes</div>
@@ -75,7 +74,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         <div className="nav-txt">Administración</div>
                     </div>
                     <ul style={{ display: openMenu === "administracion" ? "block" : "none" }}>
-                        <li>Accesos</li>
+                        <li onClick={() => router.push('/pages/administracion')} >Accesos</li>
                         <li>Permisos</li>
                     </ul>
                 </div>

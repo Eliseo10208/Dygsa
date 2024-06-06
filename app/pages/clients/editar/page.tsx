@@ -2,12 +2,12 @@
 'use client'
 import React, { useState } from 'react';
 import axios from 'axios';
-
-interface CrearClienteProps {
+import { useRouter } from 'next/navigation';
+interface EditClient {
   onBack: () => void;
 }
 
-const CrearCliente: React.FC<CrearClienteProps> = ({ onBack }) => {
+const EditClient: React.FC<EditClient> = ({ onBack }) => {
   const [formData, setFormData] = useState({
     nombre: '',
     direccion: '',
@@ -15,6 +15,7 @@ const CrearCliente: React.FC<CrearClienteProps> = ({ onBack }) => {
     provincia: '',
     telefono: ''
   });
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -46,12 +47,12 @@ const CrearCliente: React.FC<CrearClienteProps> = ({ onBack }) => {
 
   return (
     <div className="panel">
-      <button className="back_btn" onClick={onBack}>
+      <button className="back_btn"  onClick={() => router.push('/pages/clients')}>
         Regresar
       </button>
       <div className="panel-header">
         <div className="title">
-          Agregar un nuevo cliente
+         Editar Informacion
           <p>Administración de transporte de carga</p>
         </div>
       </div>
@@ -81,6 +82,7 @@ const CrearCliente: React.FC<CrearClienteProps> = ({ onBack }) => {
             <div className="group">
               <div className="label">Distrito</div>
               <input
+               placeholder='Hola'
                 name="distrito"
                 type="text"
                 className="form-control"
@@ -120,4 +122,4 @@ const CrearCliente: React.FC<CrearClienteProps> = ({ onBack }) => {
   );
 };
 
-export default CrearCliente;
+export default EditClient;
