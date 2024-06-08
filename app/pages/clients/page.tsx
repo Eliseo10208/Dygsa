@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useMemo, useState, ChangeEvent } from "react";
+import React, { useEffect, useMemo, useState, ChangeEvent } from "react";
 import { useTable, Column } from "react-table";
 import * as XLSX from "xlsx";
 import "@/app/assets/css/Styles.css";
 import "@/app/assets/css/checkbox.css";
 import CrearCliente from "./newClient";
-import EditClient from "./editClient"; // Ajusta la ruta según sea necesario
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 type Cliente = {
+    id: number;
     nombre: string;
     direccion: string;
     distrito: string;
@@ -18,39 +20,33 @@ type Cliente = {
 
 const ClientesPanel: React.FC = () => {
     const [activeComponent, setActiveComponent] = useState<string>("");
+    const [clientes, setClientes] = useState<Cliente[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(10);
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const router = useRouter();
 
-    const data: Cliente[] = useMemo(
-        () => [
-            {
-                nombre: "Cliente 1",
-                direccion: "Dirección 1",
-                distrito: "Distrito 1",
-                provincia: "Provincia 1",
-                telefono: "123456789",
-            },
-            {
-                nombre: "Cliente 2",
-                direccion: "Dirección 2",
-                distrito: "Distrito 2",
-                provincia: "Provincia 2",
-                telefono: "987654321",
-            },
-            // Agrega más datos según sea necesario
-        ],
-        []
-    );
+    useEffect(() => {
+        const fetchClientes = async () => {
+            try {
+                const response = await axios.get("/api/auth/clients");
+                setClientes(response.data);
+            } catch (error) {
+                console.error("Error fetching clientes:", error);
+            }
+        };
+
+        fetchClientes();
+    }, []);
 
     const filteredData = useMemo(
         () =>
-            data.filter((cliente) =>
+            clientes.filter((cliente) =>
                 Object.values(cliente).some((value) =>
-                    value.toLowerCase().includes(searchTerm.toLowerCase())
+                    value.toString().toLowerCase().includes(searchTerm.toLowerCase())
                 )
             ),
-        [data, searchTerm]
+        [clientes, searchTerm]
     );
 
     const columns: Column<Cliente>[] = useMemo(
@@ -66,20 +62,15 @@ const ClientesPanel: React.FC = () => {
                 Cell: ({ row }: { row: { original: Cliente } }) => (
                     <button
                         className="table_buttons orange"
-                        onClick={() => setActiveComponent("newClient")}
+                        onClick={() => router.push(`/pages/clients/${row.original.id}`)}
                     >
                         <i className="fas fa-edit"></i> Modificar
                     </button>
                 ),
             },
         ],
-        []
+        [router]
     );
-
-    const handleCellDoubleClick = () => {
-        // Implementar la lógica de edición
-        console.log("Editando:");
-    };
 
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
@@ -89,8 +80,6 @@ const ClientesPanel: React.FC = () => {
         switch (activeComponent) {
             case "newClient":
                 return <CrearCliente onBack={() => setActiveComponent("")} />;
-            case "editClient":
-                return <EditClient onBack={() => setActiveComponent("")} />;
             default:
                 return (
                     <>
@@ -202,10 +191,9 @@ const ClientesPanel: React.FC = () => {
                                     </thead>
                                     <tbody>
                                         {currentData.map((cliente, index) => (
-                                            <tr key={index}>
+                                            <tr key={cliente.id}>
                                                 <td className="dtr-control"></td>
-                                                <td>{index + 1}</td>{" "}
-                                                {/* Puedes usar el índice del map para un número de fila */}
+                                                <td>{cliente.id}</td>
                                                 <td>{cliente.nombre}</td>
                                                 <td>{cliente.direccion}</td>
                                                 <td>{cliente.distrito}</td>
@@ -215,8 +203,8 @@ const ClientesPanel: React.FC = () => {
                                                     <button
                                                         className="btn btn-warning"
                                                         onClick={() =>
-                                                            setActiveComponent(
-                                                                "editClient"
+                                                            router.push(
+                                                                `/pages/clients/${cliente.id}`
                                                             )
                                                         }
                                                     >
@@ -267,13 +255,13 @@ const ClientesPanel: React.FC = () => {
         }
     };
 
-    const tableInstance = useTable<Cliente>({ columns, data });
+    const tableInstance = useTable<Cliente>({ columns, data: filteredData });
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
         tableInstance;
 
     const exportTableToExcel = () => {
-        const ws = XLSX.utils.json_to_sheet(data);
+        const ws = XLSX.utils.json_to_sheet(clientes);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Clientes");
         XLSX.writeFile(wb, "clientes.xlsx");
