@@ -28,3 +28,61 @@ POST http://localhost:3000/api/auth/clients
   "telefono":"9661034332",
   "ruc":"jiji"
 }
+### Buscar Ruta ###(reemplaza [id] con el id de la ruta que quieres obtener).
+GET http://localhost:3000/api/auth/rutas/3
+
+### CREAR RUTA
+POST http://localhost:3000/api/auth/rutas
+Content-Type: application/json
+
+{
+  "origen": "Tonala",
+  "destino": "Tuxtla",
+  "kms": "260",
+  "combustible": 300.25
+}
+
+### Actualizar Ruta
+PUT http://localhost:3000/api/auth/rutas/3
+Content-Type: application/json
+
+{
+  "origen": "Tonalayork",
+  "destino": "Tuxtlacaca",
+  "kms": "260",
+  "combustible": 300.25
+}
+
+### Solicitud POST
+POST http://localhost:3000/api/auth/peajes
+Content-Type: application/json
+
+{
+  "ruta": 1,
+  "nombre": "Peaje 1",
+  "ubicacion": "Km 50",
+  "costo": 15.50
+}
+
+### Solicitud GET para Obtener Todos los Peajes
+GET http://localhost:3000/api/auth/peajes
+
+### Solicitud GET para Obtener un Peaje por su `id`
+GET http://localhost:3000/api/auth/peajes/4
+
+### Solicitud PUT para Actualizar un Peaje por su `id`
+PUT http://localhost:3000/api/auth/peajes/4
+Content-Type: application/json
+
+{
+  "ruta": 1,
+  "nombre": "Peaje 1 Actualizado",
+  "ubicacion": "Km 55",
+  "costo": 20.00
+}
+
+### Solicitud DELETE para Eliminar un Peaje por su `id`
+DELETE http://localhost:3000/api/auth/peajes/4
+
+### Tabla de las rutas 
+GET http://localhost:3000/api/auth/rutas/combinadas
