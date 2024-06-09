@@ -1,24 +1,37 @@
-// components/CrearCliente.tsx
-'use client';
-
-import React, { useState } from 'react';
+'use client'
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 
-interface CrearClienteProps {
+interface EditClientProps {
   onBack: () => void;
 }
 
-const CrearCliente: React.FC<CrearClienteProps> = ({ onBack }) => {
+const EditClient: React.FC<EditClientProps> = ({ onBack }) => {
   const [formData, setFormData] = useState({
     nombre: '',
     direccion: '',
     distrito: '',
     provincia: '',
-    telefono: '',
-    ruc: ''
+    telefono: ''
   });
+
   const router = useRouter();
+  const { id } = useParams(); // Assuming you use the `useParams` hook to get the dynamic ID from the URL
+
+  useEffect(() => {
+    const fetchClientData = async () => {
+      try {
+        const response = await axios.get(`/api/auth/clients/${id}`);
+        setFormData(response.data);
+      } catch (error) {
+        console.error('Error fetching client data:', error);
+      }
+    };
+
+    fetchClientData();
+  }, [id]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -29,7 +42,7 @@ const CrearCliente: React.FC<CrearClienteProps> = ({ onBack }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/auth/clients', formData, {
+      const response = await axios.put(`/api/auth/clients/${id}`, formData, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -37,11 +50,11 @@ const CrearCliente: React.FC<CrearClienteProps> = ({ onBack }) => {
 
       const data = response.data;
 
-      if (response.status === 200) {
-        alert('Cliente creado con éxito');
-        onBack();  // Navigate back to the list view
+      if (data.status === 'success') {
+        alert('Datos actualizados con éxito');
+        router.push('/clients'); // Navigate back to the list view
       } else {
-        console.log('Error:', data.message);
+        console.log('Error updating data:', data.message);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -50,12 +63,12 @@ const CrearCliente: React.FC<CrearClienteProps> = ({ onBack }) => {
 
   return (
     <div className="panel">
-      <button className="back_btn"  onClick={() => router.push('/pages/clients')}>
+      <button className="back_btn" onClick={onBack}>
         Regresar
       </button>
       <div className="panel-header">
         <div className="title">
-          Agregar un nuevo cliente
+          Editar Información
           <p>Administración de transporte de carga</p>
         </div>
       </div>
@@ -103,22 +116,12 @@ const CrearCliente: React.FC<CrearClienteProps> = ({ onBack }) => {
               />
             </div>
             <div className="group">
-              <div className="label">Telefono</div>
+              <div className="label">Teléfono</div>
               <input
                 name="telefono"
                 type="text"
                 className="form-control"
                 value={formData.telefono}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="group">
-              <div className="label">RUC</div>
-              <input
-                name="ruc"
-                type="text"
-                className="form-control"
-                value={formData.ruc}
                 onChange={handleChange}
               />
             </div>
@@ -134,4 +137,4 @@ const CrearCliente: React.FC<CrearClienteProps> = ({ onBack }) => {
   );
 };
 
-export default CrearCliente;
+export default EditClient;

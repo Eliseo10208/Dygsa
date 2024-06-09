@@ -88,7 +88,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
                     <div className="control-user">
                         <button className="btn">
-                            <img src="/assets/img/photodefault.png" /> Nombre de Usuario <i className="fas fa-caret-down"></i>
+                            <img src="/assets/img/photodefault.png" /> {session?.user?.name}  <i className="fas fa-caret-down"></i>
                         </button>
                         <ul>
                             <li>Configuración</li>
