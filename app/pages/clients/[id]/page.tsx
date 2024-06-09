@@ -7,7 +7,7 @@ interface EditClientProps {
   onBack: () => void;
 }
 
-const EditClient: React.FC<EditClientProps> = ({ onBack }) => {
+const EditClient: React.FC<EditClientProps> = () => {
   const [formData, setFormData] = useState({
     nombre: '',
     direccion: '',
@@ -63,7 +63,7 @@ const EditClient: React.FC<EditClientProps> = ({ onBack }) => {
 
   return (
     <div className="panel">
-      <button className="back_btn" onClick={onBack}>
+      <button className="back_btn"  onClick={() => window.history.back()}>
         Regresar
       </button>
       <div className="panel-header">
