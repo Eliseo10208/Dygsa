@@ -8,7 +8,7 @@ import "@/app/assets/css/checkbox.css";
 import { useRouter } from "next/navigation";
 import OrdenCarga from "./editar/page";
 type Viaje = {
-    nManifiesto: string;
+    nViaje: string;
     fProgram: string;
     ruta: string;
     vehiculo: string;
@@ -24,7 +24,19 @@ const ViajesPanel: React.FC = () => {
     const data: Viaje[] = useMemo(
         () => [
             {
-                nManifiesto: "Cliente 1",
+                nViaje: "Cliente 1",
+                fProgram: "Dirección 1",
+                ruta: "Distrito 1",
+                vehiculo: "Provincia 1",
+                conductor: "sasa",
+            },{
+                nViaje: "Cliente 12",
+                fProgram: "Dirección 1",
+                ruta: "Distrito 1",
+                vehiculo: "Provincia 1",
+                conductor: "sasa",
+            },{
+                nViaje: "Cliente 13",
                 fProgram: "Dirección 1",
                 ruta: "Distrito 1",
                 vehiculo: "Provincia 1",
@@ -48,9 +60,9 @@ const ViajesPanel: React.FC = () => {
 
     const columns: Column<Viaje>[] = useMemo(
         () => [
-            { Header: "NManifiesto", accessor: "nManifiesto" },
+            { Header: "nViaje", accessor: "nViaje" },
             { Header: "FProgramn", accessor: "fProgram" },
-            { Header: "Ruta", accessor: "ruta" },
+            // { Header: "Ruta", accessor: "ruta" },
             { Header: "Vehiculo", accessor: "vehiculo" },
             { Header: "Conductor", accessor: "conductor" },
             {
@@ -65,6 +77,7 @@ const ViajesPanel: React.FC = () => {
                     </button>
                 ),
             },
+            
         ],
         []
     );
@@ -112,7 +125,7 @@ const ViajesPanel: React.FC = () => {
         <div className="panel">
             <div className="panel-header">
                 <div className="title">
-                    Lista de clientes
+                    Lista de Cargas
                     <p>Administración de transporte de carga</p>
                 </div>
                 <div className="buttons">
@@ -171,14 +184,14 @@ const ViajesPanel: React.FC = () => {
                                 style={{ width: "0px" }}
                             ></th>
                             <th style={{ width: "79px" }}>
-                                Nº Manifiesto
+                                Nº Viaje
                             </th>
                             <th style={{ width: "61px" }}>
-                                F. program
+                                Fecha Carga
                             </th>
-                            <th style={{ width: "58px" }}>
+                            {/* <th style={{ width: "58px" }}>
                                 Ruta
-                            </th>
+                            </th> */}
                             <th style={{ width: "49px" }}>
                                 Vehículo
                             </th>
@@ -198,6 +211,12 @@ const ViajesPanel: React.FC = () => {
                                 Facturas
                             </th>
                             <th
+                                className="excel_clear"
+                                style={{ width: "47px" }}
+                            >
+                                Eliminar
+                            </th>
+                            <th
                                 className="excel_clear d-none"
                                 style={{ width: "45px" }}
                             >
@@ -209,9 +228,9 @@ const ViajesPanel: React.FC = () => {
                         {currentData.map((viaje, index) => (
                             <tr key={index}>
                                 <td className="dtr-control"></td>
-                                <td>{viaje.nManifiesto}</td>
+                                <td>{viaje.nViaje}</td>
                                 <td>{viaje.fProgram}</td>
-                                <td>{viaje.ruta}</td>
+                                {/* <td>{viaje.ruta}</td> */}
                                 <td>{viaje.vehiculo}</td>
                                 <td>{viaje.conductor}</td>
                                 <td>
@@ -234,6 +253,18 @@ const ViajesPanel: React.FC = () => {
                                         Ver más
                                     </button>
                                 </td>
+                                <td>
+                                        <button
+                                            className="btn btn-danger"
+                                            // onClick={() =>
+                                            //     // router.push(
+                                            //     //     `/pages/clients/${cliente.id}`
+                                            //     // )
+                                            // }
+                                        >
+                                           Eliminar
+                                        </button>
+                                    </td>
                             </tr>
                         ))}
                     </tbody>

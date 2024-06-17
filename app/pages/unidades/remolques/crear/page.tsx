@@ -40,7 +40,7 @@ const CrearRemolque = () => {
               <input name="nombre_transportista" type="text" className="form-control" />
             </div>
             <div className="group">
-              <div className="label">Placa de rodaje</div>
+              <div className="label">Placa de plana</div>
               <input name="placa_rodaje" type="text" className="form-control" />
             </div>
             <div className="group">

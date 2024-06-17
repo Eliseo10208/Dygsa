@@ -56,12 +56,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         <div className="nav-txt">Operadores</div>
                     </div>
                 </div>
-                <div className="nav-group">
+                {/* <div className="nav-group">
                     <div  onClick={() => router.push('/pages/rutas')}>
                         <i className="fa fa-road"></i>
                         <div className="nav-txt">Rutas</div>
                     </div>
-                </div>
+                </div> */}
                 <div className="nav-group" onClick={() => router.push('/pages/clients')}>
                     <div>
                         <i className="fa fa-users"></i>

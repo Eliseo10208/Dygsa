@@ -32,11 +32,7 @@ const CrearCamion = () => {
               <input name="nombre_transportista" type="text" className="form-control" />
             </div>
             <div className="group">
-              <div className="label">Nro de partida registral</div>
-              <input name="nro_partida_registral" type="text" className="form-control" />
-            </div>
-            <div className="group">
-              <div className="label">Placa de rodaje</div>
+              <div className="label">Placa de Tracto</div>
               <input name="placa_rodaje" type="text" className="form-control" />
             </div>
             <div className="group">
@@ -54,31 +50,6 @@ const CrearCamion = () => {
             <div className="group">
               <div className="label">Número o serie del chasis</div>
               <input name="serie_chasis" type="text" className="form-control" />
-            </div>
-            <div className="group">
-              <div className="label">Modelo</div>
-              <input name="modelo" type="text" className="form-control" />
-            </div>
-            <div className="group">
-              <div className="label">Nro de asientos</div>
-              <input name="nro_asientos" type="text" className="form-control" />
-            </div>
-            <div className="group">
-              <div className="label">Configuración</div>
-              <input name="configuracion" type="text" className="form-control" />
-            </div>
-            <div className="group">
-              <div className="label">Carrocería</div>
-              <input name="carroceria" type="text" className="form-control" />
-            </div>
-            <h5>Adicionales</h5>
-            <div className="group">
-              <div className="label">Capacidad M3</div>
-              <input name="capacidad_m3" type="text" className="form-control" />
-            </div>
-            <div className="group">
-              <div className="label">Capacidad Tn</div>
-              <input name="capacidad_tn" type="text" className="form-control" />
             </div>
           </div>
           <div className="col-md-6">

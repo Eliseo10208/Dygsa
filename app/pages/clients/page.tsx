@@ -124,7 +124,7 @@ const ClientesPanel: React.FC = () => {
                             <button
                                 className="btn btn-primary"
                                 onClick={() =>
-                                    setActiveComponent("newClient")
+                                   router.push("/pages/clients/crear")
                                 }
                             >
                                 Crear nuevo
@@ -235,11 +235,11 @@ const ClientesPanel: React.FC = () => {
                                     </td><td>
                                         <button
                                             className="btn btn-danger"
-                                            onClick={() =>
-                                                router.push(
-                                                    `/pages/clients/${cliente.id}`
-                                                )
-                                            }
+                                            // onClick={() =>
+                                            //     // router.push(
+                                            //     //     `/pages/clients/${cliente.id}`
+                                            //     // )
+                                            // }
                                         >
                                            Eliminar
                                         </button>

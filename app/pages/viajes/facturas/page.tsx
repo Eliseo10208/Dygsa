@@ -40,7 +40,10 @@ const FacturasPanel: React.FC = () => {
         () =>
             data.filter((factura) =>
                 Object.values(factura).some((value) =>
-                    value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+                    value
+                        .toString()
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase())
                 )
             ),
         [data, searchTerm]
@@ -76,7 +79,11 @@ const FacturasPanel: React.FC = () => {
                 Cell: ({ row }: { row: { original: Factura } }) => (
                     <button
                         className="table_buttons orange"
-                        onClick={() => router.push(`/pages/facturas/editar/${row.original.id}`)}
+                        onClick={() =>
+                            router.push(
+                                `/pages/facturas/editar/${row.original.id}`
+                            )
+                        }
                     >
                         <i className="fas fa-edit"></i> Editar
                     </button>
@@ -134,24 +141,25 @@ const FacturasPanel: React.FC = () => {
     return (
         <>
             <div className="panel">
+                <button
+                    className="back_btn"
+                    onClick={() => window.history.back()}
+                >
+                    Regresar
+                </button>
                 <div className="panel-header">
                     <div className="title">
                         Lista de facturas
                         <p>Administración de transporte de carga</p>
                     </div>
                     <div className="buttons">
-                        <div className="column">
-                            <button
-                                className="btn btn-green2"
-                                onClick={exportTableToExcel}
-                            >
-                                Descargar Excel
-                            </button>
-                        </div>
+                        <div className="column"></div>
                         <div className="column">
                             <button
                                 className="btn btn-primary"
-                                onClick={() => router.push('/pages/facturas/crear')}
+                                onClick={() =>
+                                    router.push("/pages/viajes/facturas/crear")
+                                }
                             >
                                 Crear nuevo
                             </button>
@@ -185,7 +193,9 @@ const FacturasPanel: React.FC = () => {
                         {headerGroups.map((headerGroup) => (
                             <tr {...headerGroup.getHeaderGroupProps()}>
                                 {headerGroup.headers.map((column) => (
-                                    <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                                    <th {...column.getHeaderProps()}>
+                                        {column.render("Header")}
+                                    </th>
                                 ))}
                             </tr>
                         ))}
@@ -197,12 +207,18 @@ const FacturasPanel: React.FC = () => {
                                 <td>{factura.nro_factura}</td>
                                 <td>{`MXN ${factura.monto.toFixed(2)}`}</td>
                                 <td>{`MXN ${factura.monto_iva.toFixed(2)}`}</td>
-                                <td>{`MXN ${factura.monto_retencion.toFixed(2)}`}</td>
+                                <td>{`MXN ${factura.monto_retencion.toFixed(
+                                    2
+                                )}`}</td>
                                 <td>{`MXN ${factura.total.toFixed(2)}`}</td>
                                 <td>
                                     <button
                                         className="btn btn-warning"
-                                        onClick={() => router.push(`/pages/facturas/editar/${factura.id}`)}
+                                        onClick={() =>
+                                            router.push(
+                                                "/pages/viajes/facturas/editar"
+                                            )
+                                        }
                                     >
                                         Editar
                                     </button>
