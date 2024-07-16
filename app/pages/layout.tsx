@@ -11,6 +11,9 @@ import ViajesPanel from "../pages/viajes/page";
 import Image from "next/image";
 import logo2 from '@/app/assets/img/logo2.png';
 import { useRouter } from 'next/navigation';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome, faTruck, faIdCard, faUsers, faScrewdriver, faBars, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { data: session, status } = useSession();
     const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -35,13 +38,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 </div>
                 <div className="nav-group">
                     <div>
-                        <i className="fa fa-home"></i>
+                        <FontAwesomeIcon icon={faHome} />
                         <div className="nav-txt" onClick={() => router.push('/pages/viajes')}>Registro de viaje</div>
                     </div>
                 </div>
                 <div className="nav-group">
                     <div className="" onClick={() => handleMenuClick("unidades")}>
-                        <i className="fa fa-truck"></i>
+                        <FontAwesomeIcon icon={faTruck} />
                         <div className="nav-txt">Unidades</div>
                     </div>
                     <ul style={{ display: openMenu === "unidades" ? "block" : "none" }}>
@@ -52,25 +55,19 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 </div>
                 <div className="nav-group">
                     <div  onClick={() => router.push('/pages/operadores')} >
-                        <i className="fa fa-id-card"></i>
+                        <FontAwesomeIcon icon={faIdCard} />
                         <div className="nav-txt">Operadores</div>
                     </div>
                 </div>
-                {/* <div className="nav-group">
-                    <div  onClick={() => router.push('/pages/rutas')}>
-                        <i className="fa fa-road"></i>
-                        <div className="nav-txt">Rutas</div>
-                    </div>
-                </div> */}
                 <div className="nav-group" onClick={() => router.push('/pages/clients')}>
                     <div>
-                        <i className="fa fa-users"></i>
+                        <FontAwesomeIcon icon={faUsers} />
                         <div className="nav-txt">Clientes</div>
                     </div>
                 </div>
                 <div className="nav-group" onClick={() => handleMenuClick("administracion")}>
                     <div>
-                        <i className="fa fa-screwdriver"></i>
+                        <FontAwesomeIcon icon={faScrewdriver} />
                         <div className="nav-txt">Administración</div>
                     </div>
                     <ul style={{ display: openMenu === "administracion" ? "block" : "none" }}>
@@ -83,12 +80,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="control-content">
                 <div className="control-header">
                     <button className="nav-bar">
-                        <i className="fa fa-bars"></i>
+                        <FontAwesomeIcon icon={faBars} />
                     </button>
 
                     <div className="control-user">
                         <button className="btn">
-                            <img src="/assets/img/photodefault.png" /> {session?.user?.name}  <i className="fas fa-caret-down"></i>
+                            <img src="/assets/img/photodefault.png" /> {session?.user?.name}  <FontAwesomeIcon icon={faCaretDown} />
                         </button>
                         <ul>
                             <li>Configuración</li>

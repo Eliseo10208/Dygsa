@@ -197,12 +197,7 @@ const VehiculosPanel: React.FC = () => {
                                 <th style={{ width: "58px" }}>
                                     Config.
                                 </th>
-                                <th style={{ width: "49px" }}>
-                                    Cap. M3
-                                </th>
-                                <th style={{ width: "60px" }}>
-                                    Cap. Tn
-                                </th>
+                              
                                 <th
                                     className="excel_clear"
                                     style={{ width: "26px" }}
@@ -230,8 +225,7 @@ const VehiculosPanel: React.FC = () => {
                                     <td>{vehiculo.placa}</td>
                                     <td>{vehiculo.clase}</td>
                                     <td>{vehiculo.configuracion}</td>
-                                    <td>{vehiculo.capM3}</td>
-                                    <td>{vehiculo.capTn}</td>
+                                  
                                     <td>
                                         <button
                                             className="btn btn-warning"

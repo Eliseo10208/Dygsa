@@ -6,7 +6,8 @@ import * as XLSX from "xlsx";
 import "@/app/assets/css/Styles.css";
 import "@/app/assets/css/checkbox.css";
 import { useRouter } from "next/navigation";
-
+import axios from "axios";
+import { useEffect } from "react";
 type Operador = {
     id: string;
     documento: string;
@@ -21,22 +22,20 @@ const OperadoresPanel: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(6);
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const [data, setData] = useState<Operador[]>([]);
+    
+    useEffect(() => {
+      const fetchData = async () => {
+          try {
+              const response = await axios.get('/api/auth/empleados');
+              setData(response.data);
+          } catch (error) {
+              console.error('Error fetching data:', error);
+          }
+      };
 
-    const data: Operador[] = useMemo(
-        () => [
-            {
-                id: "1",
-                documento: "12345678",
-                nombres: "Juan Pérez",
-                categoria: "A1",
-                celular: "555-1234",
-                licencia: "ABC123",
-                ex_medico: "2023-05-01",
-            },
-            // Agrega más datos según sea necesario
-        ],
-        []
-    );
+      fetchData();
+  }, []);
 
     const filteredData = useMemo(
         () =>
@@ -63,7 +62,7 @@ const OperadoresPanel: React.FC = () => {
                 Cell: ({ row }: { row: { original: Operador } }) => (
                     <button
                         className="table_buttons orange"
-                        onClick={() => router.push(`/pages/operadores/editar`)}
+                        onClick={() => router.push(`/pages/operadores/editar/${row.original.id}`)}
                     >
                         <i className="fas fa-edit"></i> Editar
                     </button>

@@ -80,7 +80,7 @@ const EditClient: React.FC<EditClient> = ({ onBack }) => {
               />
             </div>
             <div className="group">
-              <div className="label">Distrito</div>
+              <div className="label">Municipio</div>
               <input
                placeholder='Hola'
                 name="distrito"
@@ -91,7 +91,7 @@ const EditClient: React.FC<EditClient> = ({ onBack }) => {
               />
             </div>
             <div className="group">
-              <div className="label">Provincia</div>
+              <div className="label">Estado</div>
               <input
                 name="provincia"
                 type="text"

@@ -204,8 +204,8 @@ const ClientesPanel: React.FC = () => {
                                 </th>
                                 <th>Nombre</th>
                                 <th>Direccion</th>
-                                <th>Distrito</th>
-                                <th>Provincia</th>
+                                <th>Municipio</th>
+                                <th>Estado</th>
 
                                 <th>Telefono</th>
                                 <th>Edit</th>
