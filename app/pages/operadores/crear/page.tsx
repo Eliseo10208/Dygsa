@@ -12,7 +12,7 @@ const CrearEmpleados: React.FC = () => {
     celular: '',
     tipo_licencia: 'Local',
     nro_licencia: '',
-    categoria: '',
+    categoria: 'Propio', // Asigna un valor predeterminado válido
     fecha_venc_licencia: '',
     fecha_venc_rcontrol: '',
     fecha_venc_exmedico: '',
@@ -24,11 +24,11 @@ const CrearEmpleados: React.FC = () => {
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, files } = e.target as HTMLInputElement;
-    if (files) {
+    const { name, value } = e.target as HTMLInputElement;
+    if (e.target instanceof HTMLInputElement && e.target.files) {
       setFormData({
         ...formData,
-        [name]: files[0]
+        [name]: e.target.files[0]
       });
     } else {
       setFormData({
@@ -38,38 +38,50 @@ const CrearEmpleados: React.FC = () => {
     }
   };
 
-  const handleFileUpload = async (file: File | null) => {
-    if (!file) return null;
-
+  const handleFileUpload = async (files: (File | null)[]) => {
     const fileFormData = new FormData();
-    fileFormData.append('file', file);
+    files.forEach((file) => {
+      if (file) {
+        fileFormData.append('file', file);
+      }
+    });
 
     try {
-      const response = await axios.post('/api/auth/upload', fileFormData, {
+      const response = await axios.post('http://localhost:3000/api/auth/upload', fileFormData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      return response.data.filePath; // Asumiendo que el servidor devuelve la ruta del archivo
+      return response.data.fileUrls; // Asumiendo que el servidor devuelve una lista de URLs de archivos
     } catch (error) {
-      console.error('Error uploading file:', error);
-      return null;
+      console.error('Error uploading files:', error);
+      return [];
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const fileLicenciaPath = await handleFileUpload(formData.file_licencia);
-    const fileRControlPath = await handleFileUpload(formData.file_r_control);
-    const fileExamenMedicoPath = await handleFileUpload(formData.file_examen_medico);
+    // Validar campos obligatorios antes de enviar
+    if (!formData.nombre || !formData.fecha_nacimiento || !formData.direccion || !formData.celular || !formData.tipo_licencia || !formData.nro_licencia || !formData.categoria || !formData.fecha_venc_licencia || !formData.fecha_venc_rcontrol || !formData.fecha_venc_exmedico) {
+      console.error('Todos los campos son obligatorios.');
+      return;
+    }
+
+    const filePaths = await handleFileUpload([
+      formData.file_licencia,
+      formData.file_r_control,
+      formData.file_examen_medico
+    ]);
 
     const employeeData = {
       ...formData,
-      file_licencia: fileLicenciaPath,
-      file_r_control: fileRControlPath,
-      file_examen_medico: fileExamenMedicoPath
+      file_licencia: filePaths[0] || null,
+      file_r_control: filePaths[1] || null,
+      file_examen_medico: filePaths[2] || null
     };
+
+    console.log('Sending employee data:', employeeData);
 
     try {
       const response = await axios.post('/api/auth/empleados', employeeData, {
@@ -130,8 +142,8 @@ const CrearEmpleados: React.FC = () => {
             <div className="group">
               <div className="label">Categoria</div>
               <select name="categoria" className="form-control" value={formData.categoria} onChange={handleChange}>
-                <option value="A">Propio</option>
-                <option value="B">Promisionario</option>
+                <option value="Propio">Propio</option>
+                <option value="Promisionario">Promisionario</option>
               </select>
             </div>
             <div className="group">
