@@ -5,89 +5,88 @@ import { ResultSetHeader } from 'mysql2';
 
 export async function GET(req: NextRequest) {
     try {
-      const [rows] = await pool.query('SELECT * FROM empleados');
-      return NextResponse.json(rows);
+        const [rows] = await pool.query('SELECT * FROM empleados');
+        return NextResponse.json(rows);
     } catch (error) {
-      const errorMessage = (error as Error).message;
-      return NextResponse.json({ message: errorMessage }, { status: 500 });
+        const errorMessage = (error as Error).message;
+        return NextResponse.json({ message: errorMessage }, { status: 500 });
     }
-  }
+}
 
 export async function POST(req: NextRequest) {
-  try {
-    const {
-      folder,
-      nombre,
-      fecha_nacimiento,
-      direccion,
-      telefono,
-      tipo_licencia,
-      nro_licencia,
-      categoria,
-      fecha_venc_licencia,
-      fecha_venc_rcontrol,
-      fecha_venc_exmedico,
-      file_licencia,
-      file_r_control,
-      file_examen_medico,
-    } = await req.json();
-    const tipo_empleado = 'Conductor';
-    const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO empleados (
-        tipo_empleado,
-        folder,
-        nombre, 
-        fecha_nacimiento, 
-        direccion, 
-        celular, 
-        tipo_licencia, 
-        nro_licencia, 
-        categoria, 
-        fecha_venc_licencia, 
-        fecha_venc_rcontrol, 
-        fecha_venc_exmedico, 
-        file_licencia, 
-        file_r_control, 
-        file_examen_medico
-      ) VALUES (?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [ tipo_empleado,
-        folder,
-        nombre,
-        fecha_nacimiento,
-        direccion,
-        telefono,
-        tipo_licencia,
-        nro_licencia,
-        categoria,
-        fecha_venc_licencia,
-        fecha_venc_rcontrol,
-        fecha_venc_exmedico,
-        file_licencia ? 1 : 0,
-        file_r_control ? 1 : 0,
-        file_examen_medico ? 1 : 0,
-      ]
-    );
+    try {
+        const {
+            nombre,
+            fecha_nacimiento,
+            direccion,
+            celular,
+            tipo_licencia,
+            nro_licencia,
+            categoria,
+            fecha_venc_licencia,
+            fecha_venc_rcontrol,
+            fecha_venc_exmedico,
+            file_licencia,
+            file_r_control,
+            file_examen_medico,
+        } = await req.json();
+        
+        if (!nombre || !fecha_nacimiento || !direccion || !celular || !tipo_licencia || !nro_licencia || !categoria || !fecha_venc_licencia || !fecha_venc_rcontrol || !fecha_venc_exmedico) {
+            throw new Error('Todos los campos son obligatorios');
+        }
 
-    return NextResponse.json({
-      id: result.insertId,
-      tipo_empleado,
-      folder,
-      nombre,
-      fecha_nacimiento,
-      direccion,
-      telefono,
-      tipo_licencia,
-      nro_licencia,
-      categoria,
-      fecha_venc_licencia,
-      fecha_venc_rcontrol,
-      fecha_venc_exmedico,
-      file_licencia,
-      file_r_control,
-      file_examen_medico,
-    });
-  } catch (error) {
-    const errorMessage = (error as Error).message;
-    return NextResponse.json({ message: errorMessage }, { status: 500 });
-  }
+        const [result] = await pool.query<ResultSetHeader>(
+            `INSERT INTO empleados (
+                nombre,
+                fecha_nacimiento,
+                direccion,
+                celular,
+                tipo_licencia,
+                nro_licencia,
+                categoria,
+                fecha_venc_licencia,
+                fecha_venc_rcontrol,
+                fecha_venc_exmedico,
+                file_licencia,
+                file_r_control,
+                file_examen_medico
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                nombre,
+                fecha_nacimiento,
+                direccion,
+                celular,
+                tipo_licencia,
+                nro_licencia,
+                categoria,
+                fecha_venc_licencia,
+                fecha_venc_rcontrol,
+                fecha_venc_exmedico,
+                file_licencia,
+                file_r_control,
+                file_examen_medico,
+            ]
+        );
+
+        return NextResponse.json({
+            id: result.insertId,
+            nombre,
+            fecha_nacimiento,
+            direccion,
+            celular,
+            tipo_licencia,
+            nro_licencia,
+            categoria,
+            fecha_venc_licencia,
+            fecha_venc_rcontrol,
+            fecha_venc_exmedico,
+            file_licencia,
+            file_r_control,
+            file_examen_medico,
+        });
+    } catch (error) {
+        console.error('Error in POST /api/empleados:', error);
+        const errorMessage = (error as Error).message;
+        return NextResponse.json({ message: errorMessage }, { status: 500 });
+    }
 }

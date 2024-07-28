@@ -24,34 +24,57 @@ const CrearEmpleados: React.FC = () => {
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    // const { name, value, files } = e.target;
-    // if (files) {
-    //   setFormData({
-    //     ...formData,
-    //     [name]: files[0]
-    //   });
-    // } else {
-    //   setFormData({
-    //     ...formData,
-    //     [name]: value
-    //   });
-    // }
+    const { name, value, files } = e.target as HTMLInputElement;
+    if (files) {
+      setFormData({
+        ...formData,
+        [name]: files[0]
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
+  };
+
+  const handleFileUpload = async (file: File | null) => {
+    if (!file) return null;
+
+    const fileFormData = new FormData();
+    fileFormData.append('file', file);
+
+    try {
+      const response = await axios.post('/api/auth/upload', fileFormData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data.filePath; // Asumiendo que el servidor devuelve la ruta del archivo
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      return null;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formDataToSend = new FormData();
-    Object.keys(formData).forEach((key) => {
-      if (formData[key as keyof typeof formData]) {
-        formDataToSend.append(key, formData[key as keyof typeof formData] as string | Blob);
-      }
-    });
+    const fileLicenciaPath = await handleFileUpload(formData.file_licencia);
+    const fileRControlPath = await handleFileUpload(formData.file_r_control);
+    const fileExamenMedicoPath = await handleFileUpload(formData.file_examen_medico);
+
+    const employeeData = {
+      ...formData,
+      file_licencia: fileLicenciaPath,
+      file_r_control: fileRControlPath,
+      file_examen_medico: fileExamenMedicoPath
+    };
 
     try {
-      const response = await axios.post('/api/upload', formDataToSend, {
+      const response = await axios.post('/api/auth/empleados', employeeData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'application/json'
         }
       });
 
@@ -107,7 +130,6 @@ const CrearEmpleados: React.FC = () => {
             <div className="group">
               <div className="label">Categoria</div>
               <select name="categoria" className="form-control" value={formData.categoria} onChange={handleChange}>
-              <option value="A"></option>
                 <option value="A">Propio</option>
                 <option value="B">Promisionario</option>
               </select>
