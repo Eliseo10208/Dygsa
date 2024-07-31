@@ -6,13 +6,17 @@ import * as XLSX from "xlsx";
 import "@/app/assets/css/Styles.css";
 import "@/app/assets/css/checkbox.css";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import { useEffect } from "react";
 
 type Vehiculo = {
-    placa: string;
-    clase: string;
-    configuracion: string;
-    capM3: string;
-    capTn: string;
+    id:string;
+    nombre_transportista: string;
+    placa_rodaje: string;
+    clase_vehiculo: string;
+    nro_ejes: string;
+    año_fabricacion: string;
+    serie_chasis: string;
 };
 
 const VehiculosPanel: React.FC = () => {
@@ -20,26 +24,25 @@ const VehiculosPanel: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(6);
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const [data, setData] = useState<Vehiculo[]>([]);
 
-    const data: Vehiculo[] = useMemo(
-        () => [
-            {
-                placa: "ABC-123",
-                clase: "Camión",
-                configuracion: "4x2",
-                capM3: "20",
-                capTn: "10",
-            },
-            // Agrega más datos según sea necesario
-        ],
-        []
-    );
-
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('/api/auth/camiones');
+                setData(response.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+  
+        fetchData();
+    }, []);
     const filteredData = useMemo(
         () =>
             data.filter((vehiculo) =>
                 Object.values(vehiculo).some((value) =>
-                    value.toLowerCase().includes(searchTerm.toLowerCase())
+                    value.toString().toLowerCase().includes(searchTerm.toLowerCase())
                 )
             ),
         [data, searchTerm]
@@ -47,11 +50,11 @@ const VehiculosPanel: React.FC = () => {
 
     const columns: Column<Vehiculo>[] = useMemo(
         () => [
-            { Header: "Placa", accessor: "placa" },
-            { Header: "Clase de vehículo", accessor: "clase" },
-            { Header: "Config.", accessor: "configuracion" },
-            { Header: "Cap. M3", accessor: "capM3" },
-            { Header: "Cap. Tn", accessor: "capTn" },
+            { Header: "Placa", accessor: "placa_rodaje" },
+            { Header: "Clase de vehículo", accessor: "clase_vehiculo" },
+            { Header: "Config.", accessor: "nro_ejes" },
+            { Header: "Cap. M3", accessor: "año_fabricacion" },
+            { Header: "Cap. Tn", accessor: "serie_chasis" },
             {
                 Header: "Editar",
                 id: "editar",
@@ -222,14 +225,14 @@ const VehiculosPanel: React.FC = () => {
                             {currentData.map((vehiculo, index) => (
                                 <tr key={index}>
                                     <td className="dtr-control"></td>
-                                    <td>{vehiculo.placa}</td>
-                                    <td>{vehiculo.clase}</td>
-                                    <td>{vehiculo.configuracion}</td>
+                                    <td>{vehiculo.placa_rodaje}</td>
+                                    <td>{vehiculo.clase_vehiculo}</td>
+                                    <td>{vehiculo.nro_ejes}</td>
                                   
                                     <td>
                                         <button
                                             className="btn btn-warning"
-                                            onClick={() => router.push('/pages/unidades/vehiculos/edit')}
+                                            onClick={() => router.push(`/pages/unidades/vehiculos/edit?id=${vehiculo.id}`)}
                                         >
                                             Editar
                                         </button>

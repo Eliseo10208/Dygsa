@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 
-interface Conductor {
+interface Operador {
   id: string;
   nombre: string;
   fecha_nacimiento: string;
@@ -19,27 +19,10 @@ interface Conductor {
   file_licencia: string;
   file_r_control: string;
   file_examen_medico: string;
-  folder: string;
 }
 
 const DetallesConductor: React.FC = () => {
-  const [conductor, setConductor] = useState<Conductor | null>({
-    id: '1',
-    nombre: 'Juan Pérez',
-    fecha_nacimiento: '1980-05-15',
-    direccion: '123 Calle Falsa, Ciudad',
-    celular: '555-1234',
-    tipo_licencia: 'Local',
-    nro_licencia: 'ABC123456',
-    categoria: 'A',
-    fecha_venc_licencia: '2024-12-31',
-    fecha_venc_rcontrol: '2024-06-30',
-    fecha_venc_exmedico: '2024-11-15',
-    file_licencia: 'licencia.pdf',
-    file_r_control: 'r_control.pdf',
-    file_examen_medico: 'examen_medico.pdf',
-    folder: '1234'
-  });
+  const [conductor, setConductor] = useState<Partial<Operador>>({});
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -47,21 +30,22 @@ const DetallesConductor: React.FC = () => {
 
   useEffect(() => {
     // Descomentar esto para obtener datos reales de la API
-    /*
+    
     const fetchConductor = async () => {
       try {
-        const response = await axios.get(`/api/conductores/${conductorId}`);
+        const response = await axios.get(`/api/auth/empleados/${conductorId}`);
         setConductor(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error('Error fetching conductor:', error);
-        router.push('/conductores');
+        router.push('/pages/operadores');
       }
     };
 
     if (conductorId) {
       fetchConductor();
     }
-    */
+    
   }, [conductorId]);
 
   if (!conductor) {
@@ -83,7 +67,7 @@ const DetallesConductor: React.FC = () => {
           <div className="column">
             <button
               className="btn btn-orange2"
-              onClick={() => router.push(`/conductores?q=editar&d=${conductor.id}`)}
+              onClick={() => router.push(`/pages/operadores/editar?id=${conductor.id}`)}
             >
               Editar conductor
             </button>
@@ -120,7 +104,7 @@ const DetallesConductor: React.FC = () => {
                   {conductor.file_licencia && (
                     <a
                       download="licencia"
-                      href={`/uploads/${conductor.folder}/licencia.pdf`}
+                      href={conductor.file_licencia}
                     >
                       Descargar
                     </a>
@@ -133,7 +117,7 @@ const DetallesConductor: React.FC = () => {
                   {conductor.file_r_control && (
                     <a
                       download="r_control"
-                      href={`/uploads/${conductor.folder}/r_control.pdf`}
+                      href={conductor.file_r_control}
                     >
                       Descargar
                     </a>
@@ -172,7 +156,7 @@ const DetallesConductor: React.FC = () => {
                   {conductor.file_examen_medico && (
                     <a
                       download="examen_medico"
-                      href={`/uploads/${conductor.folder}/examen_medico.pdf`}
+                      href={conductor.file_examen_medico}
                     >
                       Descargar
                     </a>

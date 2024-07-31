@@ -1,5 +1,4 @@
-
-.login-content{
+.login-content {
 	position: absolute;
 	top: 45px;
 	right: 0;
@@ -7,48 +6,49 @@
 	max-width: 439px;
 	margin: auto;
 	width: 98%;
-	box-shadow: 0px 0px 33px 4px rgba(48,32,32,0.22);
+	box-shadow: 0px 0px 33px 4px rgba(48, 32, 32, 0.22);
 	border-radius: 10px;
 	padding: 45px 26px;
 	background: white;
 }
 
-.group{
+.group {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 }
-/* Estilos para la estructura básica del menú */
-.nav-group {
-	position: relative;
-  }
-  .table-container {
-    overflow-y: auto;
-    max-height: 400px; /* Ajusta esto según sea necesario */
+
+.control-nav {}
+
+.nav-group {}
+
+.table-container {
+	overflow-y: auto;
+	max-height: 400px;
 }
 
 .table-pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
+	display: flex;
+	justify-content: center;
+	margin-top: 10px;
 }
 
 .table-pagination button {
-    margin: 0 5px;
-    padding: 5px 10px;
-    cursor: pointer;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 3px;
+	margin: 0 5px;
+	padding: 5px 10px;
+	cursor: pointer;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 3px;
 }
 
 .table-pagination button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
+	background-color: #cccccc;
+	cursor: not-allowed;
 }
 
-  .nav-group ul {
+.nav-group ul {
 	display: none;
 	list-style-type: none;
 	padding: 0;
@@ -60,40 +60,37 @@
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 	z-index: 1000;
 	width: 100%;
-  }
-  
-  .nav-group ul.open {
+}
+
+.nav-group ul.open {
 	display: block;
-  }
-  
-  .nav-group ul li {
+}
+
+.nav-group ul li {
 	padding: 8px 16px;
 	cursor: pointer;
-  }
-  
-  .nav-group ul li:hover {
+}
+
+.nav-group ul li:hover {
 	background-color: #f0f0f0;
-  }
-  
-  /* Estilos adicionales opcionales */
-  .nav-txt {
+}
+
+.nav-txt {
 	display: inline-block;
 	margin-left: 8px;
-  }
-  
-  .fa-screwdriver {
+}
+
+.fa-screwdriver {
 	cursor: pointer;
-  }
-  
-.login-content .login-logo{
+}
+
+.login-content .login-logo {
 	text-align: center;
 }
 
-.login-content .login-form{
+.login-content .login-form {}
 
-}
-
-.login-content .login-form .login-group{
+.login-content .login-form .login-group {
 	position: relative;
 	margin: 32px 0;
 }
@@ -286,9 +283,9 @@
 }
 .control-container .control-content .control-header{
 	width: 100%;
+	height: 10%;
 	background: var(--color2);
 	box-shadow: 0 1px 1px rgba(0,0,0,0.15);
-	clear: both;
 	display: flex;
 	justify-content: space-between;
 }
@@ -301,6 +298,7 @@
 	line-height: 1;
 	padding: 10px;
 	margin: 0 7px;
+	margin-bottom: 10px;
 }
 
 .control-container .control-content .control-header .control-user{
@@ -374,6 +372,7 @@
 	cursor: pointer;
 	background: var(--color2);
 	display: flex;
+	padding-left: 40px;
 	align-items: center;
 }
 .control-container .control-nav .nav-group:has(> ul):after{
@@ -459,6 +458,7 @@
 	margin: 25px 31px;
 	box-shadow: 0 1px 1px rgba(0,0,0,0.15);
 	padding: 20px;
+	margin-top: 50px;
 }
 .panel h2{
 	margin-bottom: 33px;

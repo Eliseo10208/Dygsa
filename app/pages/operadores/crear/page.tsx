@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-
+import Swal from 'sweetalert2';
 const CrearEmpleados: React.FC = () => {
   const [formData, setFormData] = useState({
     nombre: '',
@@ -64,10 +64,20 @@ const CrearEmpleados: React.FC = () => {
 
     // Validar campos obligatorios antes de enviar
     if (!formData.nombre || !formData.fecha_nacimiento || !formData.direccion || !formData.celular || !formData.tipo_licencia || !formData.nro_licencia || !formData.categoria || !formData.fecha_venc_licencia || !formData.fecha_venc_rcontrol || !formData.fecha_venc_exmedico) {
-      console.error('Todos los campos son obligatorios.');
+      Swal.fire('Alerta!', 'Todos los campos son obligatorios.', 'warning').then(() => {
+        
+      });
       return;
     }
-
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "¿Quieres guardar los cambios?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, guardar',
+      cancelButtonText: 'No, cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
     const filePaths = await handleFileUpload([
       formData.file_licencia,
       formData.file_r_control,
@@ -92,14 +102,18 @@ const CrearEmpleados: React.FC = () => {
 
       const data = response.data;
 
-      if (data.status === 'success') {
-        router.push(`/conductores?q=ver&d=${data.id}`);
+      if (data) {
+        Swal.fire('Guardado', 'Los cambios se han guardado correctamente.', 'success').then(() => {
+          router.push('/pages/operadores');
+        });
       } else {
         console.log('Invalid data');
       }
     } catch (error) {
       console.error('Error:', error);
     }
+      }
+    });
   };
 
   return (

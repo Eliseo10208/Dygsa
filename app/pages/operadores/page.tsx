@@ -11,11 +11,15 @@ import { useEffect } from "react";
 type Operador = {
     id: string;
     documento: string;
-    nombres: string;
+    nombre: string;
     categoria: string;
     celular: string;
     licencia: string;
-    ex_medico: string;
+    fecha_vencimiento: string;
+    tipo_licencia: string;
+    fecha_venc_exmedico: string;
+    file_licencia: string;
+    file_examen_medico: string;
 };
 
 const OperadoresPanel: React.FC = () => {
@@ -50,12 +54,12 @@ const OperadoresPanel: React.FC = () => {
     const columns: Column<Operador>[] = useMemo(
         () => [
             { Header: "", accessor: "id", Cell: () => null },
-            { Header: "Documento", accessor: "documento" },
-            { Header: "Nombres", accessor: "nombres" },
+            { Header: "id", accessor: "documento" },
+            { Header: "Nombre", accessor: "nombre" },
             { Header: "Categoría", accessor: "categoria" },
             { Header: "Celular", accessor: "celular" },
-            { Header: "Licencia", accessor: "licencia" },
-            { Header: "Ex. médico", accessor: "ex_medico" },
+            { Header: "Licencia", accessor: "tipo_licencia" },
+            { Header: "Ex. médico", accessor: "fecha_venc_exmedico" },
             {
                 Header: "Editar",
                 id: "editar",
@@ -179,16 +183,16 @@ const OperadoresPanel: React.FC = () => {
                         {currentData.map((operador, index) => (
                             <tr key={index}>
                                 <td className="dtr-control"></td>
-                                <td>{operador.documento}</td>
-                                <td>{operador.nombres}</td>
+                                <td>{operador.id}</td>
+                                <td>{operador.nombre}</td>
                                 <td>{operador.categoria}</td>
                                 <td>{operador.celular}</td>
-                                <td>{operador.licencia}</td>
-                                <td>{operador.ex_medico}</td>
+                                <td>{operador.tipo_licencia}</td>
+                                <td>{operador.fecha_venc_exmedico}</td>
                                 <td>
                                     <button
                                         className="btn btn-warning"
-                                        onClick={() => router.push('/pages/operadores/editar')}
+                                        onClick={() =>  router.push(`/pages/operadores/editar?id=${operador.id}`)}
                                     >
                                         Editar
                                     </button>
@@ -196,7 +200,7 @@ const OperadoresPanel: React.FC = () => {
                                 <td>
                                     <button
                                         className="btn btn-primary"
-                                        onClick={() => router.push('/pages/operadores/ver')}
+                                        onClick={() => router.push(`/pages/operadores/ver?id=${operador.id}`)}
                                     >
                                         Ver más
                                     </button>
