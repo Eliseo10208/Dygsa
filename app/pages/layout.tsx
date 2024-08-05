@@ -77,13 +77,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         >
                             Remolques
                         </li>
-                        <li
+                        {/* <li
                             onClick={() =>
                                 router.push("/pages/unidades/configuracion")
                             }
                         >
                             Configuración
-                        </li>
+                        </li> */}
                     </ul>
                 </div>
                 <div className="nav-group">

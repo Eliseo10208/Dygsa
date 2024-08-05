@@ -1,7 +1,7 @@
-
 'use client'
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import "@/app/assets/css/Styles.css";
 import "@/app/assets/css/checkbox.css";
 import { useRouter } from "next/navigation";
@@ -11,35 +11,34 @@ type Cliente = {
     nombre: string;
 };
 
-type Conductor = {
+type Empleado = {
     id: number;
     nombre: string;
 };
 
 type Vehiculo = {
     id: number;
-    nombre: string; // Ajustar según los datos reales
+    nombre_transportista: string; 
 };
 
-type Ruta = {
+type Remolque = {
     id: number;
-    origen: string;
-    destino: string;
+    nombre_transportista: string;
 };
 
 const OrdenCarga: React.FC = () => {
     const [clientes, setClientes] = useState<Cliente[]>([]);
-    const [conductores, setConductores] = useState<Conductor[]>([]);
+    const [empleados, setEmpleados] = useState<Empleado[]>([]);
     const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
-    const [rutas, setRutas] = useState<Ruta[]>([]);
+    const [remolques, setRemolques] = useState<Remolque[]>([]);
+  
     const router = useRouter();
 
     useEffect(() => {
-        // Reemplazar con las rutas de tus APIs
-       axios.get("/api/auth/clients").then(response => setClientes(response.data));
-        axios.get("/api/conductores").then(response => setConductores(response.data));
-        axios.get("/api/vehiculos").then(response => setVehiculos(response.data));
-        axios.get("/api/rutas").then(response => setRutas(response.data));
+        axios.get("/api/auth/clients").then(response => setClientes(response.data));
+        axios.get("/api/auth/empleados").then(response => setEmpleados(response.data));
+        axios.get("/api/auth/camiones").then(response => setVehiculos(response.data));
+        axios.get("/api/auth/remolques").then(response => setRemolques(response.data));
     }, []);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -50,23 +49,39 @@ const OrdenCarga: React.FC = () => {
         // Validación de campos
         if (
             !values.servicio ||
-            !values.conductor ||
+            !values.empleado ||
             !values.cliente ||
             !values.camion ||
-            !values.ruta
+            !values.carga
         ) {
+            Swal.fire('Alerta!', 'Todos los campos obligatorios deben ser completados.', 'warning');
             return;
         }
 
-        try {
-            const response = await axios.post("/api/crear-orden-carga", values);
-            if (response.data.status === "success") {
-                // Reemplazar pagemenu con la navegación adecuada en Next.js
-                // Router.push(`/ordencarga?ver=${response.data.id}`);
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¿Quieres guardar la nueva orden de carga?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'No, cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await axios.post("/api/auth/crear-orden-carga", values);
+                    if (response.data.status === "success") {
+                        Swal.fire('Guardado', 'La orden de carga ha sido creada exitosamente.', 'success').then(() => {
+                            router.push('/pages/viajes');
+                        });
+                    } else {
+                        Swal.fire('Error', 'Hubo un problema al crear la orden de carga.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'Hubo un problema al crear la orden de carga. Ver consola para más detalles.', 'error');
+                }
             }
-        } catch (error) {
-            console.error(error);
-        }
+        });
     };
 
     return (
@@ -102,14 +117,7 @@ const OrdenCarga: React.FC = () => {
                             <label className="form-label">Toneladas</label>
                             <input name="tn" type="number" className="form-control" />
                         </div>
-                        {/* <div className="group">
-                            <label className="form-label">M3</label>
-                            <input name="m3" type="number" className="form-control" />
-                        </div> */}
-                        {/* <div className="group">
-                            <label className="form-label">B/C</label>
-                            <input name="bc" type="number" className="form-control" />
-                        </div> */}
+                       
                         <h5>Datos Importantes</h5>
                         <div className="group">
                             <label className="form-label">Tipo de servicio</label>
@@ -117,66 +125,44 @@ const OrdenCarga: React.FC = () => {
                                 <option selected disabled>--- Selecciona un servicio ---</option>
                                 <option value="local">Local</option>
                                 <option value="transferencia">Transferencia</option>
-                                <option value="foranea">Foranea</option>
+                                <option value="foranea">Foránea</option>
                             </select>
                         </div>
                         <div className="group">
-                            <label className="form-label">Conductor (*)</label>
-                            <select name="conductor" className="form-control">
-                                <option selected disabled>--- Selecciona un conductor ---</option>
-                                {conductores.map((conductor) => (
-                                    <option key={conductor.id} value={conductor.id}>
-                                        {conductor.nombre}
-                                      
+                            <label className="form-label">Empleado (*)</label>
+                            <select name="empleado" className="form-control">
+                                <option selected disabled>--- Selecciona un empleado ---</option>
+                                {empleados.map((empleado) => (
+                                    <option key={empleado.id} value={empleado.id}>
+                                        {empleado.nombre}
                                     </option>
-
-                                    
                                 ))}
                             </select>
                         </div>
-                        {/* <div className="group">
-                            <label className="form-label">Segundo conductor</label>
-                            <select name="segundo_conductor" className="form-control">
-                                <option selected disabled>--- Selecciona un conductor ---</option>
-                                {conductores.map((conductor) => (
-                                    <option key={conductor.id} value={conductor.id}>
-                                        {conductor.nombre}
-                                    </option>
-                                ))}
-                            </select>
-                        </div> */}
+                       
                         <div className="group">
                             <label className="form-label">Tracto y Plana</label>
                             <select name="camion" className="form-control">
                                 <option selected disabled>--- Selecciona un camión ---</option>
                                 {vehiculos.map((vehiculo) => (
                                     <option key={vehiculo.id} value={vehiculo.id}>
-                                        {vehiculo.nombre}
+                                        {vehiculo.nombre_transportista}
                                     </option>
                                 ))}
                             </select>
                         </div>
-                        {/* <div className="group">
-                            <label className="form-label">Ruta (*)</label>
-                            <select name="ruta" className="form-control">
-                                <option selected disabled>--- Selecciona una ruta ---</option>
-                                {rutas.map((ruta) => (
-                                    <option key={ruta.id} value={ruta.id}>
-                                        {ruta.origen} - {ruta.destino}
+                        <div className="group">
+                            <label className="form-label">Remolque (Opcional)</label>
+                            <select name="remolque" className="form-control">
+                                <option selected disabled>--- Selecciona un remolque ---</option>
+                                {remolques.map((remolque) => (
+                                    <option key={remolque.id} value={remolque.id}>
+                                        {remolque.nombre_transportista}
                                     </option>
                                 ))}
                             </select>
-                        </div> */}
-                        {/* <h5>Ruta ida</h5> */}
-                        {/* <div className="group">
-                            <label className="form-label">Costo por eje (*)</label>
-                            <input name="ida_costo_eje" type="number" step="0.01" className="form-control" required />
-                        </div> */}
-                        {/* <h5>Ruta vuelta</h5>
-                        <div className="group">
-                            <label className="form-label">Costo por eje (*)</label>
-                            <input name="vuelta_costo_eje" type="number" step="0.01" className="form-control" required />
-                        </div> */}
+                        </div>
+                     
                     </div>
                     <div className="col-md-6">
                         <div className="group">
@@ -189,16 +175,13 @@ const OrdenCarga: React.FC = () => {
                         </div>
                         <div className="group">
                             <label className="form-label">Hora presentación (Opcional)</label>
-                            <input name="hora_presentacion" type="time" className="form-control" required />
+                            <input name="hora_presentacion" type="time" className="form-control" />
                         </div>
                         <div className="group">
                             <label className="form-label">Lugar de carga (Opcional)</label>
-                            <input name="lugar_carga" type="text" className="form-control" required />
+                            <input name="lugar_carga" type="text" className="form-control" />
                         </div>
-                        {/* <div className="group">
-                            <label className="form-label">Combustible (*)</label>
-                            <input name="combustible" type="text" className="form-control" required />
-                        </div> */}
+                      
                         <div className="group">
                             <label className="form-label">Carga (*)</label>
                             <input name="carga" type="text" className="form-control" required />

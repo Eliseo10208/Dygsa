@@ -46,7 +46,7 @@ function LoginPage() {
             </div>
             <h6>HOLA, Bienvenido de nuevo!</h6>
             <form data-ajax="false" className="login-form" onSubmit={handleSubmit}>
-                {error && <div className="alert alert-danger">{error}</div>}
+                {error && <div className="alert alert-danger">Correo o contraseña incorrectos</div>}
                 <div className="login-group">
                     <input name="email" type="email" className="login-input" placeholder="Correo Electrónico" required />
                 </div>

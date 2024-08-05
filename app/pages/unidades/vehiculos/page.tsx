@@ -238,7 +238,7 @@ const VehiculosPanel: React.FC = () => {
                                         </button>
                                     </td>
                                     <td>
-                                        <button className="btn btn-success" onClick={() => router.push('/pages/unidades/vehiculos/ver')}>
+                                        <button className="btn btn-success" onClick={() => router.push(`/pages/unidades/vehiculos/ver/?id=${vehiculo.id}`)}>
                                             Ver más
                                         </button>
                                     </td>

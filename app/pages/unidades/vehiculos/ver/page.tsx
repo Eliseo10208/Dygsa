@@ -1,78 +1,50 @@
 'use client'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+
 interface Camion {
-  id: string;
+  id: number;
   nombre_transportista: string;
-  nro_partida_registral: string;
   placa_rodaje: string;
   clase_vehiculo: string;
+  nro_ejes: string;
   año_fabricacion: string;
   serie_chasis: string;
-  modelo: string;
-  nro_asientos: string;
-  configuracion: string;
-  carroceria: string;
-  nro_ejes: string;
-  capacidad_m3: string;
-  capacidad_tn: string;
-  pdf_tarjeta_propiedad: string;
-  seguro: string;
+  seguro_compañia: string;
   fecha_pago_seguro: string;
   fecha_seguro: string;
-  pdf_poliza_seguro: string;
-  pdf_seguro_pago: string;
+  ruta_pdf_poliza_seguro: string;
+  ruta_pdf_seguro_pago: string;
   fecha_cond_diso_emi: string;
   fecha_cond_diso_ven: string;
-  pdf_cert_fisomeca: string;
+  ruta_pdf_cert_fisomeca: string;
   fecha_humo_diso_emi: string;
   fecha_humo_diso_ven: string;
-  pdf_cert_humofisomeca: string;
-  folder: string;
+  ruta_pdf_cert_humofisomeca: string;
+  ruta_pdf_tarjeta_propiedad: string;
 }
 
-const DetallesCamion = ({ id }: { id: string }) => {
+
+const DetallesCamion :React.FC = () => {
   const [camion, setCamion] = useState<Camion | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const camionId = searchParams.get('id');
+
   useEffect(() => {
     const fetchCamion = async () => {
-      // Simula la obtención de datos del camión
-      // const response = await axios.get(`/api/camion/${id}`);
-      // setCamion(response.data);
-      setCamion({
-        id: '1',
-        nombre_transportista: 'Transportista A',
-        nro_partida_registral: '123456',
-        placa_rodaje: 'ABC-123',
-        clase_vehiculo: 'Camión',
-        año_fabricacion: '2010',
-        serie_chasis: 'XYZ123',
-        modelo: 'Modelo A',
-        nro_asientos: '2',
-        configuracion: 'Configuración A',
-        carroceria: 'Carrocería A',
-        nro_ejes: '2',
-        capacidad_m3: '10',
-        capacidad_tn: '20',
-        pdf_tarjeta_propiedad: '',
-        seguro: 'Seguros ABC',
-        fecha_pago_seguro: '2023-01-01',
-        fecha_seguro: '2024-01-01',
-        pdf_poliza_seguro: '',
-        pdf_seguro_pago: '',
-        fecha_cond_diso_emi: '2023-01-01',
-        fecha_cond_diso_ven: '2024-01-01',
-        pdf_cert_fisomeca: '',
-        fecha_humo_diso_emi: '2023-01-01',
-        fecha_humo_diso_ven: '2024-01-01',
-        pdf_cert_humofisomeca: '',
-        folder: 'folder_a'
-      });
+      try {
+        const response = await axios.get(`/api/auth/camiones/${camionId}`);
+        setCamion(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error fetching camion:', error);
+      }
     };
 
     fetchCamion();
-  }, [id]);
+  }, [camionId]);
 
   if (!camion) return <div>Loading...</div>;
 
@@ -87,8 +59,7 @@ const DetallesCamion = ({ id }: { id: string }) => {
         <div className="buttons">
           <div className="column"></div>
           <div className="column">
-            {/* Aquí se validan los permisos, debe ajustarse según la implementación */}
-            <button onClick={() => router.push('/pages/unidades/vehiculos/edit')} className="btn btn-orange2" >Editar vehículo</button>
+            <button onClick={() => router.push(`/pages/unidades/vehiculos/edit?id=${camion.id}`)} className="btn btn-orange2">Editar vehículo</button>
           </div>
         </div>
       </div>
@@ -102,11 +73,7 @@ const DetallesCamion = ({ id }: { id: string }) => {
                 <div className="value">{camion.nombre_transportista}</div>
               </li>
               <li>
-                <div className="name"><div className="ct">Nº de partida registral</div></div>
-                <div className="value">{camion.nro_partida_registral}</div>
-              </li>
-              <li>
-                <div className="name"><div className="ct">Placa rodaje</div></div>
+                <div className="name"><div className="ct">Placa de tracto</div></div>
                 <div className="value">{camion.placa_rodaje}</div>
               </li>
               <li>
@@ -122,39 +89,24 @@ const DetallesCamion = ({ id }: { id: string }) => {
                 <div className="value">{camion.serie_chasis}</div>
               </li>
               <li>
-                <div className="name"><div className="ct">Modelo</div></div>
-                <div className="value">{camion.modelo}</div>
-              </li>
-              <li>
-                <div className="name"><div className="ct">Nº de asientos</div></div>
-                <div className="value">{camion.nro_asientos}</div>
-              </li>
-              <li>
-                <div className="name"><div className="ct">Configuración</div></div>
-                <div className="value">{camion.configuracion}</div>
-              </li>
-              <li>
-                <div className="name"><div className="ct">Carroceria</div></div>
-                <div className="value">{camion.carroceria}</div>
+                <div className="name"><div className="ct">Fecha de pago poliza</div></div>
+                <div className="value">{camion.fecha_pago_seguro}</div>
               </li>
               <li>
                 <div className="name"><div className="ct">Nº ejes</div></div>
                 <div className="value">{camion.nro_ejes}</div>
               </li>
               <li>
-                <div className="name"><div className="ct">Capacidad M3</div></div>
-                <div className="value">{camion.capacidad_m3}</div>
-              </li>
-              <li>
-                <div className="name"><div className="ct">Capacidad Tn</div></div>
-                <div className="value">{camion.capacidad_tn}</div>
-              </li>
-              <li>
                 <div className="name"><div className="ct">Tarjeta de circulación</div></div>
                 <div className="value">
-                  {camion.pdf_tarjeta_propiedad && (
-                    <a download="tarjeta_de_circulacion" href={`/path/to/${camion.folder}/tarjeta_de_circulacion.pdf`}>Descargar</a>
-                  )}
+                  {camion.ruta_pdf_tarjeta_propiedad ? (
+                    <a
+                      download="tarjeta_de_circulacion"
+                      href={camion.ruta_pdf_tarjeta_propiedad}
+                    >
+                      Descargar
+                    </a>
+                  ) : 'No disponible'}
                 </div>
               </li>
             </ul>
@@ -166,7 +118,7 @@ const DetallesCamion = ({ id }: { id: string }) => {
             <ul>
               <li>
                 <div className="name"><div className="ct">Compañia</div></div>
-                <div className="value">{camion.seguro}</div>
+                <div className="value">{camion.seguro_compañia}</div>
               </li>
               <li>
                 <div className="name"><div className="ct">Fecha de pago poliza</div></div>
@@ -179,17 +131,17 @@ const DetallesCamion = ({ id }: { id: string }) => {
               <li>
                 <div className="name"><div className="ct">Poliza de seguro</div></div>
                 <div className="value">
-                  {camion.pdf_poliza_seguro && (
-                    <a download="poliza_seguro" href={`/path/to/${camion.folder}/poliza_seguro.pdf`}>Descargar</a>
-                  )}
+                  {camion.ruta_pdf_poliza_seguro ? (
+                    <a download="poliza_seguro" href={camion.ruta_pdf_poliza_seguro}>Descargar</a>
+                  ) : 'No disponible'}
                 </div>
               </li>
               <li>
                 <div className="name"><div className="ct">Ficha de pago</div></div>
                 <div className="value">
-                  {camion.pdf_seguro_pago && (
-                    <a download="pago_poliza_seguro" href={`/path/to/${camion.folder}/pago_poliza_seguro.pdf`}>Descargar</a>
-                  )}
+                  {camion.ruta_pdf_seguro_pago ? (
+                    <a download="pago_poliza_seguro" href={camion.ruta_pdf_seguro_pago}>Descargar</a>
+                  ) : 'No disponible'}
                 </div>
               </li>
             </ul>
@@ -209,9 +161,9 @@ const DetallesCamion = ({ id }: { id: string }) => {
               <li>
                 <div className="name"><div className="ct">Ficha de pago</div></div>
                 <div className="value">
-                  {camion.pdf_cert_fisomeca && (
-                    <a download="certificado_condiciones_fisomecanicas" href={`/path/to/${camion.folder}/certificado_condiciones_fisomecanicas.pdf`}>Descargar</a>
-                  )}
+                  {camion.ruta_pdf_cert_fisomeca ? (
+                    <a download="certificado_condiciones_fisomecanicas" href={camion.ruta_pdf_cert_fisomeca}>Descargar</a>
+                  ) : 'No disponible'}
                 </div>
               </li>
             </ul>
@@ -231,9 +183,9 @@ const DetallesCamion = ({ id }: { id: string }) => {
               <li>
                 <div className="name"><div className="ct">Ficha de pago</div></div>
                 <div className="value">
-                  {camion.pdf_cert_humofisomeca && (
-                    <a download="certificado_humos_fisomecanicas" href={`/path/to/${camion.folder}/certificado_humos_fisomecanicas.pdf`}>Descargar</a>
-                  )}
+                  {camion.ruta_pdf_cert_humofisomeca ? (
+                    <a download="certificado_humos_fisomecanicas" href={camion.ruta_pdf_cert_humofisomeca}>Descargar</a>
+                  ) : 'No disponible'}
                 </div>
               </li>
             </ul>

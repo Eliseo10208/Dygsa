@@ -6,10 +6,13 @@ import * as XLSX from "xlsx";
 import "@/app/assets/css/Styles.css";
 import "@/app/assets/css/checkbox.css";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import { useEffect } from "react";
 
-type Vehiculo = {
-    id: string;
-    placa: string;
+type Remolque = {
+    id: number;
+    nombre_transportista: string;
+    placa_rodaje:string;
     marca: string;
 };
 
@@ -17,38 +20,41 @@ const RemolquesPanel: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(6);
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const [data, setData] = useState<Remolque[]>([]);
 
-    const data: Vehiculo[] = useMemo(
-        () => [
-            {
-                id: "1",
-                placa: "ABC-123",
-                marca: "Toyota",
-            },
-            // Agrega más datos según sea necesario
-        ],
-        []
-    );
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('/api/auth/remolques');
+                setData(response.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+  
+        fetchData();
+    }, []);
 
     const filteredData = useMemo(
         () =>
-            data.filter((vehiculo) =>
-                Object.values(vehiculo).some((value) =>
+                data.filter((remolque) =>
+                Object.values(remolque).some((value) =>
                     value.toString().toLowerCase().includes(searchTerm.toLowerCase())
                 )
             ),
         [data, searchTerm]
     );
 
-    const columns: Column<Vehiculo>[] = useMemo(
+    const columns: Column<Remolque>[] = useMemo(
         () => [
             { Header: "", accessor: "id", Cell: () => null },
-            { Header: "Placa", accessor: "placa" },
+            { Header: "Nombre Transportista", accessor: "nombre_transportista" },
+            { Header: "Placa Rodaje", accessor: "placa_rodaje" },
             { Header: "Marca", accessor: "marca" },
             {
                 Header: "Editar",
                 id: "editar",
-                Cell: ({ row }: { row: { original: Vehiculo } }) => (
+                Cell: ({ row }: { row: { original: Remolque } }) => (
                     <button
                         className="table_buttons orange"
                         onClick={() => router.push(`/pages/unidades/remolques/edit`)}
@@ -60,7 +66,7 @@ const RemolquesPanel: React.FC = () => {
             {
                 Header: "Ver más",
                 id: "verMas",
-                Cell: ({ row }: { row: { original: Vehiculo } }) => (
+                Cell: ({ row }: { row: { original: Remolque } }) => (
                     <button
                         className="table_buttons blue"
                         onClick={() => router.push(`/pages/unidades/remolques/edit${row.original.id}`)}
@@ -72,7 +78,7 @@ const RemolquesPanel: React.FC = () => {
             {
                 Header: "Mto.",
                 id: "mantenimiento",
-                Cell: ({ row }: { row: { original: Vehiculo } }) => (
+                Cell: ({ row }: { row: { original: Remolque } }) => (
                     <button
                         className="table_buttons green"
                         onClick={() => router.push(`/pages/vehiculos/mantenimiento/${row.original.id}`)}
@@ -105,7 +111,7 @@ const RemolquesPanel: React.FC = () => {
 
     const router = useRouter();
 
-    const tableInstance = useTable<Vehiculo>({ columns, data });
+    const tableInstance = useTable<Remolque>({ columns, data });
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
         tableInstance;
@@ -113,8 +119,8 @@ const RemolquesPanel: React.FC = () => {
     const exportTableToExcel = () => {
         const ws = XLSX.utils.json_to_sheet(data);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Vehiculos");
-        XLSX.writeFile(wb, "vehiculos.xlsx");
+        XLSX.utils.book_append_sheet(wb, ws, "Remolques");
+        XLSX.writeFile(wb, "remolques.xlsx");
     };
 
     return (
@@ -177,16 +183,16 @@ const RemolquesPanel: React.FC = () => {
                         ))}
                     </thead>
                     <tbody {...getTableBodyProps()}>
-                        {currentData.map((vehiculo, index) => (
-                            <tr key={index}>
+                        {currentData.map((remolque) => (
+                            <tr key={remolque.id}>
                                 <td className="dtr-control"></td>
-                                <td>{vehiculo.placa}</td>
-                                <td>{vehiculo.marca}</td>
+                                <td>{remolque.nombre_transportista}</td>
+                                <td>{remolque.placa_rodaje}</td>
+                                <td>{remolque.marca}</td>
                                 <td>
                                     <button
                                         className="btn btn-warning"
-                                        // onClick={() => router.push(`/pages/unidades/remolques/edit/${vehiculo.id}`)}
-                                        onClick={() => router.push(`/pages/unidades/remolques/edit`)}
+                                        onClick={() => router.push(`/pages/unidades/remolques/edit/?id=${remolque.id}`)}
                                     >
                                         Editar
                                     </button>
@@ -194,8 +200,7 @@ const RemolquesPanel: React.FC = () => {
                                 <td>
                                     <button
                                         className="btn btn-primary"
-                                        // onClick={() => router.push(`/pages/vehiculos/ver/${vehiculo.id}`)}
-                                        onClick={() => router.push(`/pages/unidades/remolques/ver`)}
+                                        onClick={() => router.push(`/pages/unidades/remolques/ver/?id=${remolque.id}`)}
                                     >
                                         Ver más
                                     </button>
@@ -203,7 +208,7 @@ const RemolquesPanel: React.FC = () => {
                                 <td>
                                     <button
                                         className="btn btn-success"
-                                        onClick={() => router.push(`/pages/vehiculos/mantenimiento/${vehiculo.id}`)}
+                                        onClick={() => router.push(`/pages/unidades/remolques/mantenimiento/${remolque.id}`)}
                                     >
                                         Mto.
                                     </button>
