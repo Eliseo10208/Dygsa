@@ -103,27 +103,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 </div>
                 <div
                     className="nav-group"
-                    onClick={() => handleMenuClick("administracion")}
+                    onClick={() => router.push("/pages/administracion")}
                 >
                     <div>
                         <FontAwesomeIcon icon={faScrewdriver} />
                         <div className="nav-txt">Administración</div>
                     </div>
-                    <ul
-                        style={{
-                            display:
-                                openMenu === "administracion"
-                                    ? "block"
-                                    : "none",
-                        }}
-                    >
-                        <li
-                            onClick={() => router.push("/pages/administracion")}
-                        >
-                            Accesos
-                        </li>
-                        <li>Permisos</li>
-                    </ul>
                 </div>
                 <div className="nav-group">
                     <div>

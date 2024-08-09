@@ -17,10 +17,15 @@ export async function GET(req: NextRequest) {
 // Handler for POST request to create a new admin user
 export async function POST(req: NextRequest) {
   try {
-    const registerdate = new Date().toISOString();
-    const { name, lastname, email, password, rol} = await req.json();
-    const hashedPassword = await hashPassword(password);
+    const { name, lastname, email, password, rol, registerdate } = await req.json();
 
+    // Check if the email already exists
+    const [existingUser] = await pool.query<any[]>('SELECT id FROM admin_users WHERE email = ?', [email]);
+    if (existingUser.length > 0) {
+      return NextResponse.json({ message: 'El correo electrónico ya está en uso' }, { status: 409 });
+    }
+
+    const hashedPassword = await hashPassword(password);
     const [result] = await pool.query<ResultSetHeader>(
       'INSERT INTO admin_users (name, lastname, email, password, rol, registerdate) VALUES (?, ?, ?, ?, ?, ?)',
       [name, lastname, email, hashedPassword, rol, registerdate]
