@@ -130,7 +130,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
                     <div className="control-user">
                         <button className="btn">
-                            <img src="/assets/img/photodefault.png" />{" "}
+                            <Image src="/assets/img/photodefault.png" width={500} height={500} alt="nada" />{" "}
                             {session?.user?.name}{" "}
                             <FontAwesomeIcon icon={faCaretDown} />
                         </button>

@@ -1,8 +1,10 @@
+
+
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { verifyPassword,hashPassword } from '@/lib/bc';
 
-export async function authenticateUser(req: NextRequest) {
+export async function authenticateUser(req: NextRequest): Promise<NextResponse> {
   try {
     const { email, pass } = await req.json();
     if (!email || !pass) {
