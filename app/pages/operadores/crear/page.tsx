@@ -47,7 +47,7 @@ const CrearEmpleados: React.FC = () => {
     });
 
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/upload', fileFormData, {
+      const response = await axios.post('/api/auth/upload', fileFormData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
