@@ -1,26 +1,22 @@
-'use client'
+'use client';
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Swal from 'sweetalert2';
 
-interface CrearFacturaProps {
-  onBack: () => void;
-  ordenId: string;
-  nroManifiesto: string;
-}
-
-const CrearFactura: React.FC<CrearFacturaProps> = ({ onBack, ordenId, nroManifiesto }) => {
+const CrearFactura: React.FC = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const ordenId = searchParams.get('id');
   const [formData, setFormData] = useState({
     nro_factura: '',
+    orden_carga_id: ordenId,  // Mantiene el orden_carga_id
     monto: '',
-    iva_porcentaje: '16',
-    retencion_porcentaje: '3',
     monto_iva: '',
-    monto_retención: '',
+    monto_retencion: '',
     total: '',
-    file_factura: null as File | null
+    pdf_url: null as File | null // Archivo a subir
   });
-  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,8 +25,8 @@ const CrearFactura: React.FC<CrearFacturaProps> = ({ onBack, ordenId, nroManifie
       [name]: value
     });
 
-    if (name === 'monto' || name === 'iva_porcentaje' || name === 'retencion_porcentaje') {
-      calculateMonto(formData.monto, formData.iva_porcentaje, formData.retencion_porcentaje);
+    if (name === 'monto') {
+      calculateMonto(value, '16', '3'); // Suponiendo valores fijos de IVA y retención
     }
   };
 
@@ -38,7 +34,7 @@ const CrearFactura: React.FC<CrearFacturaProps> = ({ onBack, ordenId, nroManifie
     if (e.target.files) {
       setFormData({
         ...formData,
-        file_factura: e.target.files[0]
+        pdf_url: e.target.files[0] // Archivo PDF a subir
       });
     }
   };
@@ -52,41 +48,90 @@ const CrearFactura: React.FC<CrearFacturaProps> = ({ onBack, ordenId, nroManifie
     setFormData((prevFormData) => ({
       ...prevFormData,
       monto_iva: iva.toFixed(2),
-      monto_retención: retencion.toFixed(2),
+      monto_retencion: retencion.toFixed(2),
       total: total.toFixed(2)
     }));
+  };
+
+  const handleFileUpload = async (files: (File | null)[]) => {
+    const fileFormData = new FormData();
+    files.forEach((file) => {
+      if (file) {
+        fileFormData.append('file', file);
+      }
+    });
+
+    try {
+      const response = await axios.post('/api/auth/upload', fileFormData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data.fileUrls; // Asumiendo que el servidor devuelve una lista de URLs de archivos
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      Swal.fire('Error', 'Hubo un error al subir el archivo. Por favor, inténtalo de nuevo.', 'error');
+      return [];
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formDataToSend = new FormData();
-    formDataToSend.append('orden', ordenId);
-    Object.keys(formData).forEach((key) => {
-      if (key === 'file_factura' && formData.file_factura) {
-        formDataToSend.append(key, formData.file_factura);
-      } else {
-        formDataToSend.append(key, formData[key as keyof typeof formData] as string);
+    // Validar campos obligatorios antes de enviar
+    if (!formData.nro_factura || !formData.monto || !formData.orden_carga_id) {
+      Swal.fire('Alerta!', 'Todos los campos son obligatorios.', 'warning');
+      return;
+    }
+
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: '¿Quieres guardar los cambios?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, guardar',
+      cancelButtonText: 'No, cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const pdfUrl = await handleFileUpload([formData.pdf_url]);
+
+        if (pdfUrl.length === 0) {
+          return; // Detiene la ejecución si la subida del archivo falla
+        }
+
+        const facturaData = {
+          nro_factura: formData.nro_factura,
+          orden_carga_id: formData.orden_carga_id,
+          monto: formData.monto,
+          monto_iva: formData.monto_iva,
+          monto_retencion: formData.monto_retencion,
+          total: formData.total,
+          pdf_url: pdfUrl[0] || null
+        };
+
+        try {
+          const response = await axios.post('/api/auth/facturas', facturaData, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          const data = response.data;
+
+          if (data) {
+            Swal.fire('Guardado', 'La factura se ha guardado correctamente.', 'success').then(() => {
+              router.push('/pages/viajes/facturas?id=' + ordenId);
+            });
+          } else {
+            console.log('Invalid data');
+            Swal.fire('Error', 'Datos inválidos. Por favor, revisa la información.', 'error');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          Swal.fire('Error', 'Hubo un error al guardar la factura. Por favor, inténtalo de nuevo.', 'error');
+        }
       }
     });
-
-    try {
-      const response = await axios.post('/api/upload', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
-      const data = response.data;
-
-      if (data.data) {
-        onBack();
-      } else {
-        console.log('Invalid data');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
   };
 
   return (
@@ -96,7 +141,7 @@ const CrearFactura: React.FC<CrearFacturaProps> = ({ onBack, ordenId, nroManifie
       </button>
       <div className="panel-header">
         <div className="title">
-          Agregar una factura en Nº {nroManifiesto}
+          Agregar una factura en Nº {ordenId}
           <p>Administración de transporte de carga</p>
         </div>
       </div>
@@ -128,19 +173,6 @@ const CrearFactura: React.FC<CrearFacturaProps> = ({ onBack, ordenId, nroManifie
               />
             </div>
             <div className="group">
-              <div className="label">IVA (%)</div>
-              <input
-                name="iva_porcentaje"
-                type="number"
-                step="0.01"
-                placeholder="16"
-                className="form-control"
-                value={formData.iva_porcentaje}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="group">
               <div className="label">Monto IVA</div>
               <input
                 name="monto_iva"
@@ -153,27 +185,14 @@ const CrearFactura: React.FC<CrearFacturaProps> = ({ onBack, ordenId, nroManifie
               />
             </div>
             <div className="group">
-              <div className="label">Retención (%)</div>
-              <input
-                name="retencion_porcentaje"
-                type="number"
-                step="0.01"
-                placeholder="3"
-                className="form-control"
-                value={formData.retencion_porcentaje}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="group">
               <div className="label">Monto Retención</div>
               <input
-                name="monto_retención"
+                name="monto_retencion"
                 type="number"
                 step="0.01"
                 placeholder="0,00"
                 className="form-control"
-                value={formData.monto_retención}
+                value={formData.monto_retencion}
                 readOnly
               />
             </div>
@@ -192,13 +211,13 @@ const CrearFactura: React.FC<CrearFacturaProps> = ({ onBack, ordenId, nroManifie
             <div className="group">
               <div className="label">Archivo (PDF / Imagen)</div>
               <input
-                name="file_factura"
+                name="pdf_url"
                 type="file"
                 className="form-control"
                 accept="image/*,.pdf"
                 onChange={handleFileChange}
               />
-              <div className={`status ${formData.file_factura ? 'si' : 'no'}`}></div>
+              <div className={`status ${formData.pdf_url ? 'si' : 'no'}`}></div>
             </div>
             <div className="submit">
               <button type="submit" className="btn btn-success">

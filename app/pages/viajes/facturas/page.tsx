@@ -5,8 +5,9 @@ import { useTable, Column } from "react-table";
 import * as XLSX from "xlsx";
 import "@/app/assets/css/Styles.css";
 import "@/app/assets/css/checkbox.css";
-import { useRouter } from "next/navigation";
-
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import axios from "axios";
 type Factura = {
     id: string;
     nro_factura: string;
@@ -14,31 +15,32 @@ type Factura = {
     monto_iva: number;
     monto_retencion: number;
     total: number;
+    pdf_url: string;
 };
 
 const FacturasPanel: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(6);
     const [searchTerm, setSearchTerm] = useState<string>("");
-
-    const data: Factura[] = useMemo(
-        () => [
-            {
-                id: "1",
-                nro_factura: "F001",
-                monto: 1000,
-                monto_iva: 160,
-                monto_retencion: 40,
-                total: 1120,
-            },
-            // Agrega más datos según sea necesario
-        ],
-        []
-    );
+    const [facturas, setFacturas] = useState<Factura[]>([]);
+    const searchParams = useSearchParams();
+    const facturaId = searchParams.get('id');
+    const router = useRouter();
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`/api/auth/facturas/orden_carga_id/${facturaId}`);
+                setFacturas(response.data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchData();
+    }, []);
 
     const filteredData = useMemo(
         () =>
-            data.filter((factura) =>
+            facturas.filter((factura) =>
                 Object.values(factura).some((value) =>
                     value
                         .toString()
@@ -46,9 +48,16 @@ const FacturasPanel: React.FC = () => {
                         .includes(searchTerm.toLowerCase())
                 )
             ),
-        [data, searchTerm]
+        [facturas, searchTerm]
     );
-
+    const handleDelete = async (id: string) => {
+        try {
+            await axios.delete(`/api/auth/facturas/${id}`);
+            setFacturas(facturas.filter((factura) => factura.id !== id));
+        } catch (error) {
+            console.error("Error deleting data:", error);
+        }
+    };
     const columns: Column<Factura>[] = useMemo(
         () => [
             { Header: "", accessor: "id", Cell: () => null },
@@ -56,32 +65,28 @@ const FacturasPanel: React.FC = () => {
             {
                 Header: "Monto",
                 accessor: "monto",
-                Cell: ({ value }) => `MXN ${value.toFixed(2)}`,
             },
             {
-                Header: "IVA (16%)",
+                Header: "IVA",
                 accessor: "monto_iva",
-                Cell: ({ value }) => `MXN ${value.toFixed(2)}`,
             },
             {
-                Header: "Retención (4%)",
+                Header: "Retención ",
                 accessor: "monto_retencion",
-                Cell: ({ value }) => `MXN ${value.toFixed(2)}`,
             },
             {
                 Header: "Total",
                 accessor: "total",
-                Cell: ({ value }) => `MXN ${value.toFixed(2)}`,
             },
             {
                 Header: "Edit.",
                 id: "edit",
                 Cell: ({ row }: { row: { original: Factura } }) => (
                     <button
-                        className="table_buttons orange"
+                        className="btn btn-warning"
                         onClick={() =>
                             router.push(
-                                `/pages/facturas/editar/${row.original.id}`
+                                `/pages/viajes/facturas/editar?id=${row.original.id}`
                             )
                         }
                     >
@@ -94,12 +99,24 @@ const FacturasPanel: React.FC = () => {
                 id: "descargar",
                 Cell: ({ row }: { row: { original: Factura } }) => (
                     <a
-                        className="table_buttons red"
+                        className="btn btn-primary"
                         download="factura"
-                        href={`/facturas/${row.original.id}/descargar`}
+                        href={row.original.pdf_url}
                     >
                         Descargar
                     </a>
+                ),
+            },
+            {
+                Header: "Eliminar",
+                id: "eliminar",
+                Cell: ({ row }: { row: { original: Factura } }) => (
+                    <button
+                        className="btn btn-danger"
+                        onClick={() => handleDelete(row.original.id)}
+                    >
+                        Eliminar
+                    </button>
                 ),
             },
         ],
@@ -124,15 +141,15 @@ const FacturasPanel: React.FC = () => {
         currentPage * itemsPerPage
     );
 
-    const router = useRouter();
+  
 
-    const tableInstance = useTable<Factura>({ columns, data });
+    const tableInstance = useTable<Factura>({ columns, data: facturas });
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
         tableInstance;
 
     const exportTableToExcel = () => {
-        const ws = XLSX.utils.json_to_sheet(data);
+        const ws = XLSX.utils.json_to_sheet(facturas);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Facturas");
         XLSX.writeFile(wb, "facturas.xlsx");
@@ -158,7 +175,7 @@ const FacturasPanel: React.FC = () => {
                             <button
                                 className="btn btn-primary"
                                 onClick={() =>
-                                    router.push("/pages/viajes/facturas/crear")
+                                    router.push(`/pages/viajes/facturas/crear?id=${facturaId}`)
                                 }
                             >
                                 Crear nuevo
@@ -201,39 +218,18 @@ const FacturasPanel: React.FC = () => {
                         ))}
                     </thead>
                     <tbody {...getTableBodyProps()}>
-                        {currentData.map((factura, index) => (
-                            <tr key={index}>
-                                <td className="dtr-control"></td>
-                                <td>{factura.nro_factura}</td>
-                                <td>{`MXN ${factura.monto.toFixed(2)}`}</td>
-                                <td>{`MXN ${factura.monto_iva.toFixed(2)}`}</td>
-                                <td>{`MXN ${factura.monto_retencion.toFixed(
-                                    2
-                                )}`}</td>
-                                <td>{`MXN ${factura.total.toFixed(2)}`}</td>
-                                <td>
-                                    <button
-                                        className="btn btn-warning"
-                                        onClick={() =>
-                                            router.push(
-                                                "/pages/viajes/facturas/editar"
-                                            )
-                                        }
-                                    >
-                                        Editar
-                                    </button>
-                                </td>
-                                <td>
-                                    <a
-                                        className="btn btn-success"
-                                        download="factura"
-                                        href={`/facturas/${factura.id}/descargar`}
-                                    >
-                                        Descargar
-                                    </a>
-                                </td>
-                            </tr>
-                        ))}
+                        {rows.map((row) => {
+                            prepareRow(row);
+                            return (
+                                <tr {...row.getRowProps()}>
+                                    {row.cells.map((cell) => (
+                                        <td {...cell.getCellProps()}>
+                                            {cell.render("Cell")}
+                                        </td>
+                                    ))}
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
                 <div className="d-flex justify-content-between align-items-center mt-3">

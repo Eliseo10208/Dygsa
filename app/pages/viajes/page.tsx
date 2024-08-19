@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useEffect, useMemo, useState, ChangeEvent } from "react";
 import { useTable, Column } from "react-table";
@@ -49,7 +49,10 @@ const ViajesPanel: React.FC = () => {
         () =>
             viajes.filter((viaje) =>
                 Object.values(viaje).some((value) =>
-                    value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+                    value
+                        ?.toString()
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase())
                 )
             ),
         [viajes, searchTerm]
@@ -68,7 +71,11 @@ const ViajesPanel: React.FC = () => {
                 Cell: ({ row }: { row: { original: Viaje } }) => (
                     <button
                         className="btn btn-warning"
-                        onClick={() => router.push(`/pages/viajes/editar/?id=${row.original.id}`)}
+                        onClick={() =>
+                            router.push(
+                                `/pages/viajes/editar/?id=${row.original.id}`
+                            )
+                        }
                     >
                         Editar
                     </button>
@@ -80,7 +87,11 @@ const ViajesPanel: React.FC = () => {
                 Cell: ({ row }: { row: { original: Viaje } }) => (
                     <button
                         className="btn btn-success"
-                        onClick={() => router.push(`/pages/viajes/facturas?id=${row.original.id}`)}
+                        onClick={() =>
+                            router.push(
+                                `/pages/viajes/facturas?id=${row.original.id}`
+                            )
+                        }
                     >
                         Facturas
                     </button>
@@ -161,7 +172,9 @@ const ViajesPanel: React.FC = () => {
                         <div className="column">
                             <button
                                 className="btn btn-primary"
-                                onClick={() => router.push('/pages/viajes/crear')}
+                                onClick={() =>
+                                    router.push("/pages/viajes/crear")
+                                }
                             >
                                 Crear nuevo
                             </button>
@@ -195,7 +208,9 @@ const ViajesPanel: React.FC = () => {
                         {headerGroups.map((headerGroup) => (
                             <tr {...headerGroup.getHeaderGroupProps()}>
                                 {headerGroup.headers.map((column) => (
-                                    <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                                    <th {...column.getHeaderProps()}>
+                                        {column.render("Header")}
+                                    </th>
                                 ))}
                             </tr>
                         ))}
@@ -206,7 +221,9 @@ const ViajesPanel: React.FC = () => {
                             return (
                                 <tr {...row.getRowProps()}>
                                     {row.cells.map((cell) => (
-                                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                                        <td {...cell.getCellProps()}>
+                                            {cell.render("Cell")}
+                                        </td>
                                     ))}
                                 </tr>
                             );
