@@ -5,85 +5,108 @@ import { useTable, Column } from "react-table";
 import * as XLSX from "xlsx";
 import "@/app/assets/css/Styles.css";
 import "@/app/assets/css/checkbox.css";
-import { useRouter } from "next/navigation";
-import axios from "axios";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import axios from "axios";
 
-type Remolque = {
-    id: number;
-    nombre_transportista: string;
-    placa_rodaje:string;
-    marca: string;
+type Mantenimiento = {
+    id: string;
+    camion_id: string;
+    tipo_mantenimiento: string;
+    descripcion: string;
+    fecha_mantenimiento: string;
+    costo: number;
+    ruta_pdf_mantenimiento: string;
 };
 
-const RemolquesPanel: React.FC = () => {
+const MantenimientosPanel: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [itemsPerPage, setItemsPerPage] = useState<number>(6);
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const [data, setData] = useState<Remolque[]>([]);
+    const [mantenimientos, setMantenimientos] = useState<Mantenimiento[]>([]);
+    const searchParams = useSearchParams();
+    const camionId = searchParams.get('id');
+    const router = useRouter();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('/api/auth/remolques');
-                setData(response.data);
+                const response = await axios.get(`/api/auth/mantenimiento-camion/camion_id/${camionId}`);
+                setMantenimientos(response.data);
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error("Error fetching data:", error);
             }
         };
-  
         fetchData();
     }, []);
 
     const filteredData = useMemo(
         () =>
-                data.filter((remolque) =>
-                Object.values(remolque).some((value) =>
-                    value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+            mantenimientos.filter((mantenimiento) =>
+                Object.values(mantenimiento).some((value) =>
+                    value
+                        .toString()
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase())
                 )
             ),
-        [data, searchTerm]
+        [mantenimientos, searchTerm]
     );
 
-    const columns: Column<Remolque>[] = useMemo(
+    const handleDelete = async (id: string) => {
+        try {
+            await axios.delete(`/api/auth/mantenimiento-camion/${id}`);
+            setMantenimientos(mantenimientos.filter((mantenimiento) => mantenimiento.id !== id));
+        } catch (error) {
+            console.error("Error deleting data:", error);
+        }
+    };
+
+    const columns: Column<Mantenimiento>[] = useMemo(
         () => [
             { Header: "", accessor: "id", Cell: () => null },
-            { Header: "Nombre Transportista", accessor: "nombre_transportista" },
-            { Header: "Placa Rodaje", accessor: "placa_rodaje" },
-            { Header: "Marca", accessor: "marca" },
+            { Header: "Tipo Mantenimiento", accessor: "tipo_mantenimiento" },
+            { Header: "Descripción", accessor: "descripcion" },
+            { Header: "Fecha Mantenimiento", accessor: "fecha_mantenimiento" },
+            { Header: "Costo", accessor: "costo" },
             {
                 Header: "Editar",
-                id: "editar",
-                Cell: ({ row }: { row: { original: Remolque } }) => (
+                id: "edit",
+                Cell: ({ row }: { row: { original: Mantenimiento } }) => (
                     <button
-                        className="table_buttons orange"
-                        onClick={() => router.push(`/pages/unidades/remolques/edit`)}
+                        className="btn btn-warning"
+                        onClick={() =>
+                            router.push(
+                                `/pages/unidades/vehiculos/mto/edit?id=${row.original.id}`
+                            )
+                        }
                     >
                         <i className="fas fa-edit"></i> Editar
                     </button>
                 ),
             },
             {
-                Header: "Ver más",
-                id: "verMas",
-                Cell: ({ row }: { row: { original: Remolque } }) => (
-                    <button
-                        className="table_buttons blue"
-                        onClick={() => router.push(`/pages/unidades/remolques/edit${row.original.id}`)}
+                Header: "Descargar",
+                id: "descargar",
+                Cell: ({ row }: { row: { original: Mantenimiento } }) => (
+                    <a
+                        className="btn btn-primary"
+                        download="mantenimiento"
+                        href={row.original.ruta_pdf_mantenimiento}
                     >
-                        <i className="fas fa-eye"></i> Ver más
-                    </button>
+                        Descargar
+                    </a>
                 ),
             },
             {
-                Header: "Mto.",
-                id: "mantenimiento",
-                Cell: ({ row }: { row: { original: Remolque } }) => (
+                Header: "Eliminar",
+                id: "eliminar",
+                Cell: ({ row }: { row: { original: Mantenimiento } }) => (
                     <button
-                        className="table_buttons green"
-                        onClick={() => router.push(`/pages/vehiculos/mantenimiento/${row.original.id}`)}
+                        className="btn btn-danger"
+                        onClick={() => handleDelete(row.original.id)}
                     >
-                        <i className="fas fa-wrench"></i> Mto.
+                        Eliminar
                     </button>
                 ),
             },
@@ -109,41 +132,40 @@ const RemolquesPanel: React.FC = () => {
         currentPage * itemsPerPage
     );
 
-    const router = useRouter();
-
-    const tableInstance = useTable<Remolque>({ columns, data });
+    const tableInstance = useTable<Mantenimiento>({ columns, data: mantenimientos });
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
         tableInstance;
 
     const exportTableToExcel = () => {
-        const ws = XLSX.utils.json_to_sheet(data);
+        const ws = XLSX.utils.json_to_sheet(mantenimientos);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Remolques");
-        XLSX.writeFile(wb, "remolques.xlsx");
+        XLSX.utils.book_append_sheet(wb, ws, "Mantenimientos");
+        XLSX.writeFile(wb, "mantenimientos.xlsx");
     };
 
     return (
         <>
             <div className="panel">
+                <button
+                    className="back_btn"
+                    onClick={() => window.history.back()}
+                >
+                    Regresar
+                </button>
                 <div className="panel-header">
                     <div className="title">
-                        Lista de Remolques
-                        <p>Administración de remolques</p>
+                        Lista de mantenimientos
+                        <p>Administración de transporte de carga</p>
                     </div>
                     <div className="buttons">
-                        <div className="column">
-                            <button
-                                className="btn btn-green2"
-                                onClick={exportTableToExcel}
-                            >
-                                Descargar Excel
-                            </button>
-                        </div>
+                        <div className="column"></div>
                         <div className="column">
                             <button
                                 className="btn btn-primary"
-                                onClick={() => router.push(`/pages/unidades/remolques/crear`)}
+                                onClick={() =>
+                                    router.push(`/pages/unidades/vehiculos/mto/create?id=${camionId}`)
+                                }
                             >
                                 Crear nuevo
                             </button>
@@ -177,44 +199,26 @@ const RemolquesPanel: React.FC = () => {
                         {headerGroups.map((headerGroup) => (
                             <tr {...headerGroup.getHeaderGroupProps()}>
                                 {headerGroup.headers.map((column) => (
-                                    <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                                    <th {...column.getHeaderProps()}>
+                                        {column.render("Header")}
+                                    </th>
                                 ))}
                             </tr>
                         ))}
                     </thead>
                     <tbody {...getTableBodyProps()}>
-                        {currentData.map((remolque) => (
-                            <tr key={remolque.id}>
-                                <td className="dtr-control"></td>
-                                <td>{remolque.nombre_transportista}</td>
-                                <td>{remolque.placa_rodaje}</td>
-                                <td>{remolque.marca}</td>
-                                <td>
-                                    <button
-                                        className="btn btn-warning"
-                                        onClick={() => router.push(`/pages/unidades/remolques/edit/?id=${remolque.id}`)}
-                                    >
-                                        Editar
-                                    </button>
-                                </td>
-                                <td>
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={() => router.push(`/pages/unidades/remolques/ver/?id=${remolque.id}`)}
-                                    >
-                                        Ver más
-                                    </button>
-                                </td>
-                                <td>
-                                    <button
-                                        className="btn btn-success"
-                                        onClick={() => router.push(`/pages/unidades/remolques/mto?id=${remolque.id}`)}
-                                    >
-                                        Mto.
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {rows.map((row) => {
+                            prepareRow(row);
+                            return (
+                                <tr {...row.getRowProps()}>
+                                    {row.cells.map((cell) => (
+                                        <td {...cell.getCellProps()}>
+                                            {cell.render("Cell")}
+                                        </td>
+                                    ))}
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
                 <div className="d-flex justify-content-between align-items-center mt-3">
@@ -253,4 +257,4 @@ const RemolquesPanel: React.FC = () => {
     );
 };
 
-export default RemolquesPanel;
+export default MantenimientosPanel;

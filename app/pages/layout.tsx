@@ -19,9 +19,16 @@ import {
     faUsers,
     faScrewdriver,
     faBars,
-    faCaretDown,
+    faCaretDown, 
+    faSignOutAlt
 } from "@fortawesome/free-solid-svg-icons";
 import { signOut } from "next-auth/react";
+type SessionUser = {
+    name?: string;
+    email?: string;
+    image?: string;
+    rol?: string;
+};
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { data: session, status } = useSession();
     const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -29,10 +36,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const handleMenuClick = (menu: string) => {
         setOpenMenu(openMenu === menu ? null : menu);
     };
-
+    const userRol = (session?.user as SessionUser)?.rol
     if (status === "loading") return <div>Cargando...</div>;
     if (status === "unauthenticated") return <div>No autenticado</div>;
-
+    
     return (
         <div className="control-container">
             <div className="control-nav">
@@ -101,23 +108,26 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                         <div className="nav-txt">Clientes</div>
                     </div>
                 </div>
+                {(userRol === "owner" || userRol === "admin") && (
                 <div
                     className="nav-group"
                     onClick={() => router.push("/pages/administracion")}
                 >
                     <div>
                         <FontAwesomeIcon icon={faScrewdriver} />
-                        <div className="nav-txt">Administración</div>
+                            <div className="nav-txt">Administración</div>
+                        </div>
                     </div>
-                </div>
+                )}
                 <div className="nav-group">
                     <div>
-                        <button
+                        <FontAwesomeIcon icon={faSignOutAlt} />
+                        <div
+                            className="nav-txt"
                             onClick={() => signOut({ callbackUrl: "/login" })}
-                            className="btn"
                         >
                             Salir
-                        </button>
+                        </div>
                     </div>
                 </div>
             </div>

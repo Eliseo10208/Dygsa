@@ -243,7 +243,7 @@ const VehiculosPanel: React.FC = () => {
                                         </button>
                                     </td>
                                     <td>
-                                        <button className="btn btn-primary" onClick={() => router.push('/pages/unidades/vehiculos/mantenimiento')}>
+                                        <button className="btn btn-primary" onClick={() => router.push(`/pages/unidades/vehiculos/mto?id=${vehiculo.id}`)}>
                                             Mto.
                                         </button>
                                     </td>
